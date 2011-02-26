@@ -1,0 +1,77 @@
+{% extends 'homepage.html' %}
+
+{% block title %}{{ info.title }}{% endblock %}
+
+{% block content %}
+    <!--<div id="header">
+        <div class="logo">
+            <a href="/L">{{ info.objecttitle }} home</a>
+        </div>
+        <div class="banner">
+            <span>The logo of the portal could go here... </span>
+        </div>
+    </div>-->
+    <div id="Content">
+        <!--<h1>
+            {{ info.title }}</h1>-->
+        <h2>
+            Dirichlet series
+        </h2>
+        <p>
+            {{ info.dirichlet }}
+        </p>
+        <h2>
+            Functional equation
+        </h2>
+        <p>
+            {{ info.functionalequation }}
+        </p>
+        <h2>
+            Euler product
+        </h2>
+        <p>
+            {{ info.eulerproduct }}
+        </p>
+        <h2>
+            Imaginary part of the first few zeroes on the critical line
+        </h2>
+	{% if info.zeroeslink %}
+        <p>
+            <span id="zeroes"></span>
+        </p>
+    {% else %}
+         <p>Not enough Dirichelet series coefficients to compute zeros.</p>       
+    {% endif %}
+    {% if info.sv1 and info.sv12 %}
+
+        <h2>Special Values</h2>
+        <p>
+         {{ info.sv12 }}<br>
+         {{ info.sv1 }} <br>
+        </p>
+    {% else %}
+         <p>Not enough Dirichelet series coefficients to compute special values.</p>  
+    {% endif %}
+
+	{% if info.plotlink %}
+        <h2>
+            Graph of the \(Z\)-function along the critical line
+        </h2>
+        <img src="{{ info.plotlink|safe }}" >
+    {% else %}
+<p>Not enough Dirichelet series coefficients to make a graph.</p>       
+	{% endif %}
+ 
+    </div>
+    
+	<div class="spacer">
+        &nbsp;</div>
+        
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#zeroes").load("{{ info.zeroeslink|safe }}");
+        });
+    </script>
+
+{% endblock %}
+
