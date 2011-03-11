@@ -1,0 +1,81 @@
+{% extends 'homepage.html' %}
+
+{% block content %}
+
+    <script>
+    function show_code(system) {
+        $('.sage').hide()
+        $('.pari').hide()
+        $('.magma').hide()
+        $('.'+system).show()
+    }
+    </script>
+
+        <h1>
+            {{ info.label }}</h1>
+            <div>
+                <a onclick="show_code('sage'); return false" href='#'>sage</a>
+                <a onclick="show_code('pari'); return false" href='#'>pari</a>
+                <a onclick="show_code('magma'); return false" href='#'>magma</a>
+            </div>
+        <div class='sage nodisplay code'>sage: E = EllipticCurve({{info.ainvs}})<br>sage: E.isogeny_class()</div>
+        <div class='pari nodisplay code'>xxx</div>
+        <h2>
+            Curves
+        </h2>
+        <table border=0 width='100%'>
+            <tr>
+            <td >Cremona label</td>
+            </tr>
+        {% for curve in info.curves: %}
+            <tr>
+            <td ><a href="/EllipticCurve/Q/{{curve}}">{{curve}}</a></td>
+           
+            </tr>
+        {% endfor %}
+        </table>
+        <h2>Rank</h2>
+        <div class='sage nodisplay code'>sage: E.rank()</div>
+        <p>
+        {{ info.rank}}
+        </p>
+        <h2>
+            Modular degree for a1
+        </h2>
+     <div class='sage nodisplay code'>sage: E.modular_degree()</div>
+        <p>
+        {{info.modular_degree}}
+        </p>
+        <h2>
+            Modular form
+        </h2>
+        <div class='sage nodisplay code'>sage: E.q_eigenform(10)</div>
+        <p>
+            {{ info.f | safe }}
+        </p>
+         <p align="right">
+        <a  href='{{info.download_qexp_url}}' target='_blank' >download coefficients</a>
+    </p>
+    <h2>Isogeny Matrix</h2>
+    <p>
+    \({{info.isogeny_matrix}}\)
+    </p>
+        <h2>
+            Isogeny graph.
+        </h2>
+        <div class='sage nodisplay code'>sage: E.isogeny_graph().plot(edge_labels=True,layout='circular',vertex_size=250,)<br>(Note: the following graph has been relabeled<br>to respect the Cremona labeling)</div>
+        <center>
+        <img width="300" height="300" src="{{info.graph_img}}" />
+        </center>
+    <h2>Download Stuff </h2>
+    <p align="right">
+        <a  href='{{info.download_all_url}}' target='_blank' >download all</a>
+    </p>
+ <p align="right">
+        <a  href='{{info.download_Rub_data_imag}}' target='_blank' >download Rubinstein data imaginary</a>
+    </p>
+ <p align="right">
+        <a  href='{{info.download_Rub_data_real}}' target='_blank' >download Rubinstein data real</a>
+    </p>
+    {% endblock %}
+</html>
