@@ -1,3 +1,5 @@
+import re
+
 from flask import render_template, url_for, make_response
 from sage.all import *
 import tempfile, os
@@ -10,6 +12,10 @@ import LfunctionPlot
 from utilities import to_dict
 #from elliptic_curve import by_cremona_label
 # just testing
+
+
+
+cremona_label_regex = re.compile(r'(\d+)([a-z])+(\d*)')
 
 def render_webpage(request, arg1, arg2, arg3, arg4, arg5):
     args = request.args
@@ -41,7 +47,8 @@ def render_webpage(request, arg1, arg2, arg3, arg4, arg5):
 
     if arg1 == 'Riemann':
         temp_args['type'] = 'riemann'
-
+    elif arg1 == 'Character' and arg2 == 'Dirichlet' and arg3 == '1' and arg4 == '0':
+        temp_args['type'] = 'riemann'
     elif arg1 == 'Character' and arg2 == 'Dirichlet':
         temp_args['type'] = 'dirichlet'
         temp_args['charactermodulus'] = arg3
@@ -273,7 +280,7 @@ def initLfunction(L,args, request):
 
     elif args['type'] == 'ellipticcurve':
         label = L.label
-        info['friends'] = [('Elliptic Curve', url_for('by_cremona_label',label=label)),('Modular Form', url_for('not_yet_implemented'))]
+        info['friends'] = [('Elliptic Curve', url_for('by_label',label=label)),('Modular Form', url_for('not_yet_implemented'))]
         info['bread'] = [('L-function','/L'),('Elliptic Curve','/L/degree2#EllipticCurve_Q'),
                          (label,url_for('render_Lfunction',arg1='EllipticCurve',arg2='Q',arg3= label))]
 
