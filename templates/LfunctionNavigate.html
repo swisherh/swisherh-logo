@@ -1,0 +1,115 @@
+{% extends 'homepage.html' %}
+
+
+{% block content %}
+<!--    <div id="header">
+        <div class="logo">
+            <a href="/L">{{ info.objecttitle }} home</a>
+        </div>
+        <div class="banner">
+            <span>The logo of the portal could go here... </span>
+        </div>
+    </div>
+    <div id="content">
+        <h1>
+            {{ info.title }}
+        </h1>-->
+        <!--{{ info.degree_list|safe }}-->
+
+    
+<h2> Browse </h2>
+
+<h3>By degree</h3><table cellpadding = "10"><tr>
+{% for r in info.degree_list: %}
+<td><a href="degree{{r}}">{{r}}</a></td>
+{% endfor %}
+</tr>
+</table>
+<p>
+
+<h3>By type</h3>
+<table cellpadding ="10">
+{% for i in info.l: %}
+<tr>
+{% for t in info.type_table[i]: %}
+<td><a href="{{t.link}}">{{t.title|safe}}</a></td>
+{% endfor %}
+<tr>
+{% endfor %}
+</table>
+<br>
+<br>
+<h2> Search </h2>
+
+
+<form action="{{url_for(".LfunctionDB.query")}}" method=get>
+<table>
+<tr>
+<td>Degree</td><td> <input type='text' name='degree' size = "4"></td><td><span class="formexample"> e.g. 4 </span></td>
+</tr>
+
+<tr>
+<td>Signature</td><td> <input type='text' name='signature' size = '4'></td><td><span class="formexample"> e.g. [1,2] </span></td>
+</tr>
+
+<tr>
+<td>Level </td><td><input type='text' name='level' size='4'></td><td><span class="formexample"> e.g. 389 </span></td>
+</tr>
+<tr>
+
+<tr>
+<td>Lowest Zero is greater than</td><td> <input type='text' size='4' name='zerolowerbound'></td><td> and less than </td><td><input type='text' size='4' name='zeroupperbound'></td><td><span class="formexample"> e.g. 1.1 and 2.1 </span></td>
+</tr>
+<tr>
+<td>Critical Value is around</td><td> <input type='text' name='critical_value' size='4'></td><td><span class="formexample"> e.g. 0.5 </span></td>
+</tr>
+<tr>
+<td>Value at 1 is around</td><td> <input type='text' name='special_value' size='4'></td><td><span class="formexample"> e.g. 3.1 </span></td>
+</tr>
+<tr>
+<td>
+<input type='submit' value='Search' >
+</td>
+</tr>
+</table>
+</form>
+
+
+
+<!--<h2>Search by label</h2>
+
+<form>
+<input type='text' name='natural' size=60>
+<p>
+<input type='submit' name='search value='search by label'>
+-->
+
+<!--
+<input type='submit' name='lucky' value="search by label">
+-->
+</form>
+
+
+
+<!--
+<p>
+By signature: 
+{% for t in info.signature_list: %}
+<a href="?signature={{t}}">{{t}}</a>
+{% endfor %}
+
+<p>
+By discriminant: 
+{% for r in info.discriminant_list: %}
+<a href="?discriminant={{r}}">{{r}}</a>
+{% endfor %}
+
+<p>
+By class number: 
+{% for r in info.class_number_list: %}
+<a href="?class_number={{r}}">{{r}}</a>
+{% endfor %}
+-->
+{% endblock %}
+
+

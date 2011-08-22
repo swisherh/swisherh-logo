@@ -1,0 +1,23 @@
+{% extends "homepage.html" %}
+{% block body %}
+
+Examples:
+{{ index() }}
+
+Raw:
+<ul>
+<li><a href="/raw">raw</a>
+</ul>
+
+Accounts:
+<ul>
+ <li>You are "{{username}}"</li>
+ <li><a href="/user">User Management</a></li>
+</ul>
+
+Knowledge:
+<ul>
+ <li><a href="{{ url_for("knowledge.index") }}">Knowledge</a></li>
+</ul>
+
+{% endblock %}

@@ -1,0 +1,141 @@
+import re
+import pymongo
+
+from base import app, getDBConnection
+from flask import Flask, session, g, render_template, url_for, request, redirect
+
+import sage.all
+from sage.all import ZZ, QQ, PolynomialRing, NumberField, CyclotomicField, latex, AbelianGroup, polygen, euler_phi
+
+from utils import ajax_more, image_src, web_latex, to_dict, coeff_to_poly, pol_to_html
+
+from number_field import parse_field_string, field_pretty
+
+def parse_list(L): # parse a string like '[2,2]' without just calling eval()
+    return [int(a) for a in str(L)[1:-1].split(',')]
+
+@app.route("/ModularForm/GL2/")
+def hilbert_modular_form_render_webpage():
+    args = request.args
+    if len(args) == 0:      
+        info = {    }
+        credit = 'L. Dembele, S. Donnelly and J. Voight'	
+        t = 'Hilbert Modular Forms'
+        bread = [('Hilbert Modular Forms', url_for("hilbert_modular_form_render_webpage"))]
+        info['learnmore'] = []
+
+        return render_template("hilbert_modular_form/hilbert_modular_form_all.html", info = info, credit=credit, title=t, bread=bread)
+    else:
+        return hilbert_modular_form_search(**args)
+
+def hilbert_modular_form_search(**args):
+    C = getDBConnection()
+    info = to_dict(args) # what has been entered in the search boxes
+    if 'natural' in info:
+        return render_hmf_webpage({'label' : info['natural']})
+    query = {}
+    for field in ['field_label', 'weight', 'level_norm', 'dimension']:
+        if info.get(field):
+            if field == 'weight':
+                query[field] = parse_list(info[field])
+            else:
+                if field == 'field_label':
+                    query[field] = parse_field_string(info[field])
+                else:
+                    query[field] = info[field]
+
+    if info.get('count'):        
+        try:
+            count = int(info['count'])
+        except:
+            count = 10
+    else:
+        info['count'] = 10
+        count = 10
+
+    info['query'] = dict(query)
+#    C.hmfs.forms.ensure_index([('label',pymongo.ASCENDING)])
+    res = C.hmfs.forms.find(query).sort([('label',pymongo.ASCENDING)]).limit(count)
+    nres = res.count()
+        
+    info['forms'] = res
+    if nres>0:
+        info['field_pretty_name'] = field_pretty(res[0]['field_label'])
+    else:
+        info['field_pretty_name'] = ''
+    info['number'] = nres
+    if nres==1:
+        info['report'] = 'unique match'
+    else:
+        if nres>count:
+            info['report'] = 'displaying first %s of %s matches'%(count,nres)
+        else:
+            info['report'] = 'displaying all %s matches'%nres
+
+#    info['learnmore'] = [('Number Field labels', url_for("render_labels_page")), ('Galois group labels',url_for("render_groups_page")), ('Discriminant ranges',url_for("render_discriminants_page"))]
+    t = 'Hilbert Modular Form search results'
+
+    bread = [('Hilbert Modular Forms', url_for("hilbert_modular_form_render_webpage")),('Search results',' ')]
+    properties = []
+    return render_template("hilbert_modular_form/hilbert_modular_form_search.html", info = info, title=t, properties=properties, bread=bread)
+
+@app.route('/ModularForm/GL2/<field_label>/holomorphic/<label>')
+def render_hmf_webpage(**args):
+    C = getDBConnection()
+    data = None
+    if 'label' in args:
+        label = str(args['label'])
+        data = C.hmfs.forms.find_one({'label': label})
+    if data is None:
+        return "No such field"    
+    info = {}
+    try:
+        info['count'] = args['count']
+    except KeyError:
+        info['count'] = 10
+
+    hmf_field  = C.hmfs.fields.find_one({'label': data['field_label']})
+    field_info = C.numberfields.fields.find_one({'label': data['field_label']})
+    field_info['galois_group'] = str(field_info['galois_group'][3])
+    info['field_info'] = field_info
+    info['field_poly'] = pol_to_html(str(coeff_to_poly(field_info['coefficients'])))
+
+    data['field_label'] = field_pretty(data['field_label'])
+    info.update(data)
+    info['downloads_visible'] = True
+    info['downloads'] = [('worksheet (not yet)', '/')]
+    info['friends'] = [('L-function (not yet)', '/')]
+#    info['learnmore'] = [('Number Field labels', url_for("render_labels_page")), ('Galois group labels',url_for("render_groups_page")), ('Discriminant ranges',url_for("render_discriminants_page"))]
+    bread = [('Hilbert Modular Forms', url_for("hilbert_modular_form_render_webpage")),('%s'%data['label'],' ')]
+
+    t = "Hilbert Cusp Form %s" % info['label']
+    credit = 'L. Dembele, S. Donnelly and J. Voight'	
+
+    eigs = eval(data['hecke_eigenvalues'])
+    primes = hmf_field['primes']
+    w = polygen(QQ,'w')
+    n = min(len(eigs),len(primes))
+    info['eigs'] = [{'eigenvalue': eigs[i],
+                     'prime_ideal': primes[i], 
+                     'prime_norm': primes[i][0]} for i in range(n)]
+        
+    properties = []
+    properties = ['<br>']
+    properties.extend('<table>')
+    properties.extend('<tr><td align=left>Field:<td align=left>%s</td>'%data["field_label"])
+    properties.extend('<tr><td align=left>Degree:<td align=left> %s</td>'%field_info['degree'])
+    properties.extend('<tr><td align=left>Discriminant:<td align=left>%s</td>'%field_info['discriminant'])
+    properties.extend('<tr><td align=left>Polynomial:<td align=left>%s</td>'%field_info['discriminant'])
+    properties.extend('<tr><td align=left>Class number:<td align=left>%s</td>'%field_info['class_number'])
+    properties.extend('<tr><td align=left>Galois group:<td align=left>%s</td>'%field_info['galois_group'])
+    properties.extend('</table>')
+    properties.extend('<hr>')
+    properties.extend('<table>')
+    properties.extend('<tr><td align=left>Weight:<td align=left>%s</td>'%data["weight"])
+    properties.extend('<tr><td align=left>Level:<td align=left> %s</td>'%data['level_ideal'])
+    properties.extend('<tr><td align=left>Level Norm:<td align=left>%s</td>'%data['level_norm'])
+    properties.extend('<tr><td align=left>Label:<td align=left>%s</td>'%data['label_suffix'])
+    properties.extend('</table>')
+
+    return render_template("hilbert_modular_form/hilbert_modular_form.html", info = info, properties=properties, credit=credit, title = t, bread=bread)
+
