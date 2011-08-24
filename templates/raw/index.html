@@ -1,0 +1,20 @@
+{% extends 'homepage.html' %}
+
+{% block content %}
+
+{# <H1>Number theory database</H1> #}
+
+<div id = "content">
+
+{% for db, colls in all_db %}
+<h2> {{db}} </h2>
+    <p>
+    {% for coll in colls %}
+        <p><a href='/raw/{{db}}/{{coll}}'>{{coll}}</a>
+    {% endfor %}
+<p>
+{% endfor %}
+
+</div>
+
+{% endblock %}
