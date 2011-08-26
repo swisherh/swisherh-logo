@@ -1,0 +1,617 @@
+{# template defs #}
+{% set col_main = '#292' %}
+
+{% set col_knowl = '#229' %}
+{% set col_knowl_h = '#DDF' %}
+{% set col_knowl_d = '#88F' %}
+{% set col_knowl_dd = '#005' %}
+
+{# end defs #}
+
+* {
+zoom: 0;
+}
+
+img { border: 0; }
+
+body
+{
+    margin: 0px;
+    padding: 0px;
+    font-family: sans-serif;
+    color: #111;
+    background-color: white;
+    /* max-width: 1200px; */
+}
+#content > h1
+{
+    font-size: 200%;
+    font-weight: bold;
+    color: {{ green }};
+    font-family: sans-serif;
+    text-decoration: none;
+    padding 5px 0 5px 0;
+    margin: 15px 0;
+}
+#content > h1:first-child {
+  margin-top: 0px;
+}
+
+#content > h2
+{
+    font-family: sans-serif;
+    text-decoration: none;
+    font-size: 130%;
+    text-align: left;
+    font-weight: bold;
+    color: #292;
+    padding 5px 0 5px 0;
+    margin: 20px 0 20px 0;
+}
+#content > h3 {
+    font-family: sans-serif;
+    text-decoration: none;
+    font-size: 115%;
+    text-align: left;
+    font-weight: bold;
+    color: #181;
+    padding 5px 0 5px 0;
+    margin: 15px 0 15px 0;
+}
+#footer {
+    clear: both;
+    margin-top: 40px;
+    background-color: #dfd;
+    border-top: 2px solid #bfb;
+    padding: 25px 10px;
+    text-align: center;
+    font-size: 75%;
+    color: #060;
+}
+
+
+a {
+  color: #292;
+  text-decoration: none;
+  font-family: sans-serif;
+  padding: 2px 2px;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+}
+
+a:visited { color: #080; }
+a:hover { 
+  color: #000; 
+  background: #cfc;  
+}
+
+.logo a, .logo a:hover, body.knowl .logo a:hover {
+  background: none;
+}
+
+#header {
+  /*border-bottom: 2px solid #4a4;*/
+  min-height: 120px;
+  background: #dfd;
+  -moz-box-shadow:     0px 5px 5px #8b8;
+  -webkit-box-shadow:  0px 5px 5px #8b8;
+  box-shadow:          0px 5px 5px #8b8;
+}
+
+body.knowl #header {
+  background: {{ col_knowl_h }};
+  -moz-box-shadow:     0px 5px 5px #88b;
+  -webkit-box-shadow:  0px 5px 5px #88b;
+  box-shadow:          0px 5px 5px #88b;
+}
+
+#header .logo {
+    float: left;
+    height: 120px;
+    width: 200px;
+    margin: 0px;
+}
+#header .right {
+    margin-left: 210px;
+    margin-top: 0px;
+}
+#header #title {
+    /* border: 1px solid green; */
+    font-size: 180%;
+    font-weight: bold;
+    font-family: sans-serif;
+    min-height: 100px;
+    position: relative;
+    color: #040;
+}
+
+#header #title-content {
+  position: absolute;
+  bottom: 4px;
+}
+
+#header .bread {
+    /* border: 1px solid red; */
+    font-family: sans-serif;
+    min-height: 18px;
+    font-size: 90%;
+    padding-top: 2px;
+}
+#header .userinfo {
+    /* border: 1px solid red;  */
+    white-space:nowrap; 
+    color: #060;
+    font-family: sans-serif;
+    min-height: 18px;
+    font-size: 90%;
+    padding: 2px 5px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+#header .userinfo a {
+    color: #060;
+}
+  
+
+#flashes p {
+  border-left: 15px solid #DDF;
+  padding: 5px;
+  background: #EEF;
+  
+}
+
+#flashes p.error {
+  margin: 15px 0;
+  font-size: 95%;
+  border: 0;
+  border-left: 15px solid #FDD;
+  background: #FEE;
+}
+
+
+
+#main {
+	margin:  0px 0px 0px 200px;
+	padding: 0px 0px 0px 10px;
+  min-height: 600px;
+    /* border: 1px solid purple; */
+}
+
+#properties {
+    font-size: 85%;
+    font-family: sans-serif;
+    min-width: 200px;
+    float: right;
+    clear: right;
+    margin: 20px 0px 15px 15px;
+    /* width: 20%; */
+    background: #efe;
+    border: 1px solid #474;
+    border: 0;
+    padding: 0px;
+    /* border-top-left-radius: 10px; */
+    /* border-bottom-left-radius: 10px; */
+    /* -moz-border-radius-bottomleft: 10px; */
+    /* -moz-border-radius-topleft: 10px; */
+    /* -moz-box-shadow:     5px 5px 4px #8a8; */
+    /* -webkit-box-shadow:  5px 5px 4px #8a8; */
+    /* box-shadow:          5px 5px 4px #8a8; */
+}
+#properties-body div, #properties-body p {
+  padding: 5px;
+}
+#properties-body h1, #properties-body h2 {
+    color: #050;
+    padding: 5px;
+    margin: 0;
+    margin-bottom: 0;
+    background: #bfb;
+}
+#properties-body h1 {
+    font-size: 120%;
+}
+#properties-body h2 {
+    font-size: 110%;
+    margin-top: 10px;
+}
+#properties-body h2:first-child { margin-top: 0px; }
+
+#properties-body {
+  margin: 0;
+  padding: 0;
+}
+#properties-header {
+  margin: 0;
+  padding: 5px;
+  color: #050;
+  background: #9d9;
+  font-size: 110%;
+  cursor: pointer;
+}
+
+#content {
+    margin-top: 20px;
+    font-size: 95%;
+}
+
+#content blockquote
+{
+/*
+    margin: 10px;
+    color: #996633;
+    text-decoration: none;
+    font-size: 12px;
+    padding-left: 15px;
+    font-family: sans-serif;
+    line-height: 18px;
+    background-color: #F1EFE2;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: justify;
+    padding-right: 10px;
+    border: 2px solid #ECE9D8;
+*/
+}
+/*
+blockquote p {
+    color: #CC6600;
+    line-height: 18px;
+    font-family: serif;
+}
+*/
+
+#sidebar {
+    float: left;
+    width: 200px;
+    margin: 20px 0px 0px 0px;
+    font-family: sans-serif;
+    font-size: 85%;
+    color: #390;
+    background: #EFE;
+}
+
+#sidebar h2 {
+    font-family: sans-serif;
+    font-size: 100%;
+    background-color: #bfb;
+    color: #050;
+    padding: 5px;
+    margin: 20px 0 0 0;
+}
+
+#sidebar h2#top {
+    margin: 0;
+}
+
+#sidebar ul {
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+}
+#sidebar ul li {
+    display: block;
+    margin: 0px;
+    padding: 0px;
+}
+#sidebar a:hover {
+    background: #bfb;
+}
+#sidebar a {
+    display: block;
+    padding: 5px;
+    background: #efe;
+}
+
+/* highlighting menu entries (if their respective blueprint overwirtes the body_class variable!) */
+body.mwf #sidebar a.mwf { background: #BFB; }
+body.cmf #sidebar a.cmf { background: #BFB; }
+body.knowl #sidebar a.knowl { background: #BBF; }
+
+.visible {
+	visibility: visible;
+}
+	
+.hidden {
+	visibility: hidden;
+	height: 0px;
+}
+
+.code {
+    font-family: monospace;
+    margin: 2px;
+    margin-right: 20px;
+}
+
+.nodisplay {
+    display: None;
+}
+
+.formexample {
+   font-size: 80%;
+   font-style: italic;
+   color: grey;
+}
+
+td.forminfo {
+   font-size: 80%;
+   font-style: italic;
+   color: grey;
+   vertical-align: top;
+}
+
+form input, form textarea {
+  border: 2px solid #ACA;
+  font-size: 110%;
+  padding: 3px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+
+form button, form select {
+  padding: 3px 6px;
+  background: #DFD;
+  font-size: 110%;
+  border-radius: 4px;
+  -moz-border-radius:4px;
+  -webkit-border-radius:4px;
+  cursor: pointer;
+  border: 2px solid #ADA;
+  min-width: 75px;
+}
+
+body.knowl form button, 
+body.knowl form select {
+  border: 2px solid #AAD;
+  background: #DDF;
+}
+body.knowl form textarea,
+body.knowl form input {
+  border: 2px solid #AAD;
+}
+
+form button:hover, 
+form select:hover {
+  background:    #CFC;
+  border: 2px solid #9C9;
+}
+
+body.knowl form button:hover,
+body.knowl form select:hover {
+  background:    #CCF;
+  border: 2px solid #99C;
+}
+
+table {
+    border: 0;
+    border-collapse:collapse;
+}
+
+table th {
+  border-bottom: 2px solid #9B9;
+  padding-bottom: 5px;
+}
+
+table th, table td {
+  padding-left:  10px;
+  padding-right: 10px;
+}
+
+table a {
+  display: block;
+  padding: 2px 5px;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+}
+
+table a:hover {
+    background: #cfc;
+}
+
+
+table td.spacing {
+  height: 20px;
+}
+
+table.ntdata {
+    width: 100%;
+    border: 0;
+}
+
+table.ntdata thead tr {
+    background: #afa;
+    border-bottom: 1px solid black;
+}
+
+table.ntdata tbody tr {
+}
+
+table tr.odd {
+    background: white;
+}
+
+table tr.even {
+ background: #eeffee;
+}
+
+table.ntdata tr.line {
+    border-bottom: 1px dotted gray;
+}
+
+div.literature {
+    margin-top: 10px;
+    font-size: 90%;
+    color: #111111;
+
+}
+
+.name {
+    font-weight: bold;
+}
+
+.emph {
+    font-style: italic;
+}
+
+.highlight {
+  /* text-decoration: underline; */
+  font-weight: bold;
+}
+
+
+/** page wide defs for knowls, the *[knowl] is a selector for
+ *  all elements, that have a knowl attribute set to any value */
+
+*[knowl] {
+  /* border-bottom: 2px dotted #66C; */
+  /* cursor: pointer; */
+}
+
+*[knowl]:hover {
+  /* border-bottom: 2px solid #66C; */
+  /* color: #66C; */
+  /* background: #ccf; */
+}
+
+.knowl-title {
+  border-bottom: 1px dotted #66C;
+}
+
+body.knowl #header {
+  background: {{ col_knowl_h }}; 
+}
+body.knowl #header #title {
+  color: #004;
+}
+body.knowl #content h1,
+body.knowl #content h2,
+body.knowl #content a {
+  color: {{ col_knowl }};
+}
+body.knowl a:hover {
+  background: #ccf;
+}
+
+div > *[knowl], p > *[knowl] {
+  /* color: #11A; */
+}
+
+.knowl-error {
+   color: red;
+   border-bottom: 0;
+}
+
+.knowl-qm {
+  font-family: sans-serif;
+  font-weight: bold;
+  background: #99d;
+  color: #fff; 
+  cursor: pointer;
+  padding: 0 7px;
+  border-radius: 12px;
+}
+.knowl-qm:hover {
+  background: #66d;
+}
+h1 > .knowl-qm {
+  /** custom superscript */
+  font-size: 16px;
+  position: relative;
+  top: -1.0em;
+  left: -0.6em;
+}
+h2 > .knowl-qm {
+  /** custom superscript */
+  font-size: 14px;
+  position: relative;
+  top: -0.6em;
+  left: -0.4em;
+}
+.knowl-output {
+  background: #EEE; 
+  border-left: 10px solid {{ col_knowl_d }};
+  padding: 5px 10px 0px 5px;
+  display: none;
+}
+.knowl-output h1 {
+  color: {{ col_knowl_dd }};
+  margin: 5px 0px;
+}
+.knowl-output h2 {
+  color: {{ col_knowl_dd }};
+  margin: 5px 0px;
+}
+
+.knowl-footer {
+  border-top: 1px solid {{ col_knowl_d }};
+  margin-top: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.knowl-footer a {
+  color: {{ col_knowl_dd }};
+}
+.knowl-footer a:hover {
+  background: {{ col_knowl_h }};
+}
+
+/* end knowl */
+
+
+/*** Tables for the Siegel corner ***/
+
+/** TODO these definitions are too broad. please make siegel a 
+ * blueprint (name is e.g. "siegel") and prefix all siegel 
+ * related definitions with body.siegel 
+ */
+.box1 {
+    margin: 20px 5px 20px 5px;
+    padding: 1px;
+    max-width: 600px;
+    overflow: auto;
+}
+
+.small{
+    font-size: 12px;
+}
+
+.error {
+    margin: 20px 0 20px 0;
+    padding: 10px;
+    border: 1px solid red;
+    color: red;
+    font-size: 120%;
+}
+
+.enternumber
+{
+  border: 1px solid black;
+}
+
+.submitbutton
+{
+  border: 1px solid black;
+  background-color: #45BDD7;
+}
+
+.watermark {
+  color: #999 !important;
+}
+
+
+.propertylist {
+  margin: 2em 0;
+  padding: 0;
+  border: 1px solid #999999;
+}
+
+.propertylist dt {
+  font-weight: bold;
+}
+
+.propertylist dd {
+  margin-bottom: 1em
+}
