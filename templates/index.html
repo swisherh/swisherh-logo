@@ -1,0 +1,34 @@
+{% extends "homepage.html" %}
+{% block body %}
+
+Examples:
+{{ index() }}
+
+Raw:
+<ul>
+<li><a href="/raw">raw</a>
+</ul>
+
+Accounts:
+<ul>
+ {% if user.is_authenticated() -%}
+   <li>You are "<a href="{{ url_for('users.info') }}">{{username}}</a>"</li>
+ {%- else -%}
+   <li>You are "{{username}}"</li>
+ {%- endif %}
+ <li><a href="{{ url_for("users.list") }}">User Management</a></li>
+</ul>
+
+Knowledge DB:
+<ul>
+ <li><a href="{{ url_for("knowledge.index") }}">Knowledge</a></li>
+ <li><a href="{{ url_for("knowledge.test") }}">Testpage</a></li>
+</ul>
+
+Data uploading:
+<ul>
+ <li><a href="{{ url_for("upload.index") }}">Upload data</a></li>
+ <li><a href="{{ url_for("upload.admin") }}">View uploaded files and moderate</a></li>
+</ul>
+
+{% endblock %}
