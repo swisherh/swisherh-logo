@@ -26,7 +26,7 @@
 	The first few Satake parameters \(\alpha_p\) and angles \(\theta_p = \textrm{Arg}(\alpha_p) \) are
 	<br>
 	{{ info.satake | safe }}
-	<br>
+	<!--br>
 	{% if info.atkin_lehner != "" %}
 		<br>
 		The Atkin-Lehner eigenvalues are
@@ -38,21 +38,21 @@
 		{{ info.atkin_lehner_cusps | safe }}
 		<br><small>* ) The Fricke involution</small>
 	{% endif %}
-
+		< -->
 <h2>Special Values</h2>
 	Values at some CM points:
 	{{ info.CM_values | safe }}
 
-	{% if info.explicitformulas is defined %}
+	{% if info.explicit_formulas is defined %}
 <h2>Explicit Formulas</h2>
 	
-	 {{info.explicitformulas }}
+	 {{info.explicit_formulas }}
 	{% endif %}
 
 	<!-- h2>Explicit Formulas</h2 -->
 	{% if  true%}
 <h2>Get more coefficients</h2>
-	<form name="get_coefficients" method="post"  action="{{url_for('render_classical_modular_forms')}}">
+	<form name="get_coefficients" method="post"  action="{{url_for('.render_classical_modular_forms')}}">
 	  <input type="hidden" name="download" value="coefficients">
 	  Get / compute  <input type="text" size="10" name="number" value="10"> 
 	  coefficients in the following format:
@@ -76,7 +76,7 @@
 	  </form>
 
 <h2>Download as Sage Object</h2>
-<form name="download_object_form" method="post"  action="{{url_for('render_classical_modular_forms')}}">
+<form name="download_object_form" method="post"  action="{{url_for('.render_classical_modular_forms')}}">
   <input type="hidden" name="download" value="object">
   <input type="hidden" name="level" value="{{info.level }}">
   <input type="hidden" name="character" value="{{info.character }}">
@@ -85,7 +85,7 @@
   <input type="submit" name="Submit" value="Download" Onclick="document.download.submit()">
 </form>
 <div class="formexample"> 
-<form name="download_file" method="post"  action="{{url_for('render_classical_modular_forms')}}">
+<form name="download_file" method="post"  action="{{url_for('.render_classical_modular_forms')}}">
   Note: In order to use this data file you need to download and import
   <input type="hidden" name="download" value="file">
   <input type="hidden" name="download_file" value="web_modforms.py">

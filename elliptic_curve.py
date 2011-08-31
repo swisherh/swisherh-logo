@@ -7,7 +7,7 @@ from base import app
 from flask import Flask, session, g, render_template, url_for, request, redirect, make_response
 
 
-from utilities import ajax_more, image_src, web_latex, to_dict, parse_range
+from utils import ajax_more, image_src, web_latex, to_dict, parse_range
 import sage.all 
 from sage.all import ZZ, EllipticCurve, latex, matrix,srange
 q = ZZ['x'].gen()
@@ -17,6 +17,7 @@ q = ZZ['x'].gen()
 #########################
 
 cremona_label_regex = re.compile(r'(\d+)([a-z])+(\d*)')
+sw_label_regex=re.compile(r'sw(\d+)(\.)(\d+)(\.*)(\d*)')
 
 def format_ainvs(ainvs):
     """
@@ -104,14 +105,14 @@ def elliptic_curve_search(**args):
             if number:
                 return render_curve_webpage_by_label(label=label)
             else:
-                return render_isogeny_class(int(N), iso)
+                return render_isogeny_class(str(N)+iso)
         else:
             query['label'] = label
     for field in ['conductor', 'torsion', 'rank']:
         if info.get(field):
             query[field] = parse_range(info[field])
-    if info.get('iso'):
-        query['isogeny'] = parse_range(info['isogeny'], str)
+    #if info.get('iso'):
+        #query['isogeny'] = parse_range(info['isogeny'], str)
     if 'optimal' in info:
         query['number'] = 1
     info['query'] = query
@@ -122,7 +123,9 @@ def elliptic_curve_search(**args):
     info['format_ainvs'] = format_ainvs
     credit = 'John Cremona'
     t = 'Elliptic curves over \(\mathbb{Q}\)'
-    bread = [('Elliptic Curves', url_for("rational_elliptic_curves")),('Elliptic Curves over \(\mathbb{Q}\)', url_for("rational_elliptic_curves")),('search results',' ')]
+    bread = [('Elliptic Curves', url_for("rational_elliptic_curves")),
+             ('Elliptic Curves over \(\mathbb{Q}\)', url_for("rational_elliptic_curves")),
+             ('Search Results', '.')]
     return render_template("elliptic_curve/elliptic_curve_search.html",  info = info, credit=credit,bread=bread, title = t)
     
 
@@ -130,18 +133,26 @@ def elliptic_curve_search(**args):
 #  Specific curve pages
 ##########################
 
-@app.route("/EllipticCurve/Q/<int:conductor>/<iso_class>")
-def by_isogeny(conductor, iso_class):
-    return render_isogeny_class(conductor, iso_class)
+@app.route("/EllipticCurve/Q/<label>")
+def by_ec_label(label):
+    try:
+        N, iso, number = cremona_label_regex.match(label).groups()
+    except:
+        N,d1, iso,d2, number = sw_label_regex.match(label).groups()
+    if number:
+        return render_curve_webpage_by_label(label=label)
+    else:
+        return render_isogeny_class(label)
     
-def render_isogeny_class(conductor, iso_class):
+def render_isogeny_class(iso_class):
     info = {}
     credit = 'John Cremona'
-    label = "%s%s" % (conductor, iso_class)
+    label=iso_class
+
     C = base.getDBConnection()
     data = C.ellcurves.isogeny.find_one({'label': label})
     if data is None:
-        return "No such curves"
+        return "No such isogeny class"
     ainvs = [int(a) for a in data['ainvs_for_optimal_curve']]
     E = EllipticCurve(ainvs)
     info = {'label': label}
@@ -163,6 +174,7 @@ def render_isogeny_class(conductor, iso_class):
     info['download_all_url'] = url_for('download_all', label=str(label))
     friends=[('Elliptic Curve %s' % l , "/EllipticCurve/Q/%s" % l) for l in data['label_of_curves_in_the_class']]
     friends.append(('Quadratic Twist', "/quadratic_twists/%s" % (label)))
+    friends.append(('Modular Form', url_for("cmf.render_classical_modular_form_from_label",label="%s" %(label))))
     info['friends'] = friends
 
     t= "Elliptic Curve Isogeny Class %s" % info['label']
@@ -170,18 +182,25 @@ def render_isogeny_class(conductor, iso_class):
 
     return render_template("elliptic_curve/iso_class.html", info = info,bread=bread, credit=credit,title = t)
 
-@app.route("/EllipticCurve/Q/<label>")
-def by_cremona_label(label):
-    N, iso, number = cremona_label_regex.match(label).groups()
-    if number:
-        return render_curve_webpage_by_label(str(label))
-    else:
-        return render_isogeny_class(int(N), iso)
 
-@app.route("/EllipticCurve/Q/<int:conductor>/<iso_class>/<int:number>")
-def by_curve(conductor, iso_class, number):
-    return render_curve_webpage_by_label(label="%s%s%s" % (conductor, iso_class, number))
+#@app.route("/EllipticCurve/Q/<label>")
+#def by_cremona_label(label):
+#    try:
+#        N, iso, number = cremona_label_regex.match(label).groups()
+#    except:
+#        N, iso, number = sw_label_regex.match(label).groups()
+#    if number:
+#        return render_curve_webpage_by_label(str(label))
+#    else:
+#        return render_isogeny_class(str(N)+iso)
 
+#@app.route("/EllipticCurve/Q/<int:conductor>/<iso_class>/<int:number>")
+#def by_curve(conductor, iso_class, number):
+#    if conductor <140000:
+#        return render_curve_webpage_by_label(label="%s%s%s" % (conductor, iso_class, number))
+#    else:
+#        return render_curve_webpage_by_label(label="sw%s.%s.%s" % (conductor, iso_class, number))
+        
 def render_curve_webpage_by_label(label):
     C = base.getDBConnection()
     data = C.ellcurves.curves.find_one({'label': label})
@@ -219,7 +238,7 @@ def render_curve_webpage_by_label(label):
         'disc_factor': latex(discriminant.factor()),
         'j_invar_factor':latex(j_invariant.factor()),
         'label': label,
-        'isogeny':str(N)+iso_class,
+        'isogeny':iso_class,
         'equation': web_latex(E),
         'f': ajax_more(E.q_eigenform, 10, 20, 50, 100, 250),
         'generators':','.join(web_latex(g) for g in generator) if 'gens' in data else ' ',
@@ -233,23 +252,28 @@ def render_curve_webpage_by_label(label):
                         })
     info['downloads_visible'] = True
     info['downloads'] = [('worksheet', url_for("not_yet_implemented"))]
-    info['friends'] = [('Isogeny class', "/EllipticCurve/Q/%s/%s" % (N, iso_class)),
-                       ('modular form', url_for("not_yet_implemented")),
+    info['friends'] = [('Isogeny class', "/EllipticCurve/Q/%s" % iso_class),
+                       ('Modular Form', url_for("cmf.render_classical_modular_form_from_label",label="%s" %(iso_class))),
                        ('L-function', "/L/EllipticCurve/Q/%s" % label)]
     info['learnmore'] = [('Elliptic Curves', url_for("not_yet_implemented"))]
     info['plot'] = image_src(plot)
     info['iso_class'] = data['iso']
     info['download_qexp_url'] = url_for('download_qexp', limit=100, ainvs=','.join([str(a) for a in ainvs]))
-    properties = ['<h2>%s</h2>' % label, ' <img src="%s" width="200" height="150"/><br/><br/>' % image_src(plot),'<h2>Conductor</h2>',
-    '\(%s\)<br/><br/>' % N, '<h2> Discriminant</h2>','\(%s\)<br/><br/>' % discriminant, '<h2>j-invariant</h2>','\(%s\)<br/><br/>' % j_invariant,
-     '<h2>Rank</h2>','\(%s\)<br/><br/>' % rank ,'<h2>Torsion Structure</h2>', '\(%s\)<br/><br/>' % tor_group
+    properties2 = [('Label', '%s' % label),
+                   (None, '<img src="%s" width="200" height="150"/>' % image_src(plot)),
+                   ('Conductor', '\(%s\)' % N), 
+                   ('Discriminant', '\(%s\)' % discriminant),
+                   ('j-invariant', '\(%s\)' % j_invariant),
+                   ('Rank', '\(%s\)' % rank),
+                   ('Torsion Structure', '\(%s\)' % tor_group)
     ]
     #properties.extend([ "prop %s = %s<br/>" % (_,_*1923) for _ in range(12) ])
     credit = 'John Cremona'
     t = "Elliptic Curve %s" % info['label']
     bread = [('Elliptic Curves ', url_for("rational_elliptic_curves")),('Elliptic Curves over \(\mathbb{Q}\)', url_for("rational_elliptic_curves")),('Elliptic curves %s' %info['label'],' ')]
 
-    return render_template("elliptic_curve/elliptic_curve.html", info=info, properties=properties, credit=credit,bread=bread, title = t)
+    return render_template("elliptic_curve/elliptic_curve.html", 
+         info=info, properties2=properties2, credit=credit,bread=bread, title = t)
 
 @app.route("/EllipticCurve/Q/padic_data")
 def padic_data():
@@ -258,7 +282,7 @@ def padic_data():
     p = int(request.args['p'])
     info['p'] = p
     N, iso, number = cremona_label_regex.match(label).groups()
-    print N, iso, number
+    #print N, iso, number
     if request.args['rank'] == '0':
         info['reg'] = 1
     elif number == '1':

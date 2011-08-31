@@ -10,11 +10,15 @@ import classical_modular_forms
 import elliptic_curve
 import quadratic_twists
 import Lfunction
-import maass_form
+#import maass_form
 import plot_example
 import number_field
 import lfunction_db
 import maass_form_picard
+import maass_waveforms
+import users 
+import knowledge
+import upload
 
 import raw
 
@@ -26,12 +30,27 @@ def not_found(error):
 
 @app.route("/")
 def index():
-    return render_template('index.html', title ="Template Title")
+    return render_template('index.html', title ="Index")
 
-@app.route("/robots.txt")
-def robots():
-   import os
-   return open(os.path.join('.', "static","robots.txt")).read()
+def root_static_file(name):
+    def static_fn():
+       import os
+       fn = os.path.join('.', "static", name)
+       if os.path.exists(fn):
+         return open(fn).read()
+       import logging
+       logging.critical("root_static_file: file %s not found!" % fn)
+       return ''
+    app.add_url_rule('/%s'%name, 'static_%s'%name, static_fn)
+map(root_static_file, [ 'robots.txt', 'favicon.ico' ])
+
+@app.route("/style.css")
+def css():
+  from flask import make_response
+  response = make_response(render_template("style.css"))
+  response.headers['Content-type'] = 'text/css'
+  response.headers['Cache-Control'] = 'public, max-age=600'
+  return response
 
 @app.route('/a/<int:a>')
 def a(a):
@@ -69,6 +88,7 @@ def form_example():
 @app.route("/L/")
 @app.route("/L/<arg1>") # arg1 is EllipticCurve, ModularForm, Character, etc
 @app.route("/L/<arg1>/<arg2>") # arg2 is field
+#@app.route("/L/<arg1>/<arg2>/") # arg2 is field
 @app.route("/L/<arg1>/<arg2>/<arg3>") #arg3 is label
 @app.route("/L/<arg1>/<arg2>/<arg3>/<arg4>")
 @app.route("/L/<arg1>/<arg2>/<arg3>/<arg4>/<arg5>")
@@ -93,6 +113,10 @@ def browseGraph():
 def browseGraphHolo():
     return Lfunction.render_browseGraphHolo(request.args)
 
+@app.route("/browseGraphChar")
+def browseGraphChar():
+    return Lfunction.render_browseGraphHolo(request.args)
+
 @app.route("/zeroesLfunction")
 def zeroesLfunction():
     return Lfunction.render_zeroesLfunction(request.args)
@@ -105,9 +129,9 @@ def ModularForm_GSp4_Q_top_level():
 #def render_classical_modular_form():
 #    return classical_modular_form.render_webpage(request.args)
 
-@app.route('/ModularForm/GL2/Q/Maass/')
-def render_maass_form():
-    return maass_form.render_webpage(request.args)
+#@app.route('/ModularForm/GL2/Q/Maass/')
+#def render_maass_form():
+#    return maass_form.render_webpage(request.args)
 
 @app.route('/example_plot')
 def render_example_plot():
@@ -115,7 +139,7 @@ def render_example_plot():
 
 @app.route("/not_yet_implemented")
 def not_yet_implemented():
-    return render_template("not_yet_implemented.html")
+    return render_template("not_yet_implemented.html", title = "Not Yet Implemented")
 
 
 def usage():
@@ -147,7 +171,7 @@ def main():
         sys.exit(2)
 
     # default options to pass to the app.run()
-    options = { "port": 37777, "host": "127.0.0.1" }
+    options = { "port": 37777, "host": "127.0.0.1" , "debug" : False}
     logfile = "flasklog"
     dbport = 37010
 
@@ -179,17 +203,37 @@ def main():
             options["use_debugger"] = False
 
     import logging
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    root_logger.name = "LMFDB"
+    import utils
+    formatter = logging.Formatter(utils.LmfdbFormatter.fmtString.split(r'[')[0])
+    ch = logging.StreamHandler()
+    ch.setFormatter(formatter)
+    root_logger.addHandler(ch)
+    
     file_handler = logging.FileHandler(logfile)
     file_handler.setLevel(logging.WARNING)
+    app.logger.addHandler(file_handler)
     
     import base
     base._init(dbport)
-   
-    app.logger.addHandler(file_handler)
+
+    # just for debugging
+    #if options["debug"]:
+    #  logging.info(str(app.url_map))
+
     app.run(**options)
 
 
 if __name__ == '__main__':
-
     main()
-
+else:
+    # HSY: what's this else part about? 
+    import logging
+    logfile = "flasklog"
+    file_handler = logging.FileHandler(logfile)
+    file_handler.setLevel(logging.WARNING)
+    import base
+    base._init(37010)
+    app.logger.addHandler(file_handler)

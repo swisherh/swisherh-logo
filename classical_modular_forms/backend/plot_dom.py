@@ -3,8 +3,8 @@ r""" Excerpt from my MySubgroup class. Contains routines to draw fundamental dom
 r"""
 import matplotlib.patches as patches
 import matplotlib.path as path
-
-from sage.all import I,Gamma0,Gamma1,Gamma,SL2Z,ZZ,RR,ceil,sqrt,CC,line,text,latex,exp,pi
+import logging 
+from sage.all import I,Gamma0,Gamma1,Gamma,SL2Z,ZZ,RR,ceil,sqrt,CC,line,text,latex,exp,pi,infinity
 
 def draw_fundamental_domain(N,group='Gamma0',model="H",axes=None,filename=None,**kwds):
         r""" Draw fundamental domain
@@ -24,8 +24,11 @@ def draw_fundamental_domain(N,group='Gamma0',model="H",axes=None,filename=None,*
 
         """
         G=eval(group+'('+str(N)+')')
-        #print G
-        name ="$"+latex(G)+"$"
+	s="$"+latex(G)+"$"
+	s=s.replace("mbox","mathrm")
+	s=s.replace("Bold","mathbb")
+        name = s
+	#name ="$\mbox{SL}_{2}(\mathbb{Z})$"
         ## need a "nice" set of coset representatives to draw a connected fundamental domain. Only implemented for Gamma_0(N)
         coset_reps = nice_coset_reps(G)
         #if(group=='Gamma0'):
@@ -39,7 +42,7 @@ def draw_fundamental_domain(N,group='Gamma0',model="H",axes=None,filename=None,*
         if(axes<>None):
             [x0,x1,y0,y1]=axes
         elif(model=="D"):
-            x0=-1 ; x1=1 ; y0=-1 ; y1=1 
+            x0=-1 ; x1=1 ; y0=-1.1 ; y1=1 
         else:
             # find the width of the fundamental domain
             w=0  #self.cusp_width(Cusp(Infinity))
@@ -60,7 +63,7 @@ def draw_fundamental_domain(N,group='Gamma0',model="H",axes=None,filename=None,*
                         wmin=V[0 ,1 ]
                 if( max(r1,inf1) > max_x):
                     max_x = max(r1,inf1)
-            #print "wmin,wmax=",wmin,wmax
+            logging.debug("wmin,wmax=%s,%s" % (wmin,wmax))
             #x0=-1; x1=1; y0=-0.2; y1=1.5
             x0=RR(-max_x) ; x1=RR(max_x) ; y0=RR(-0.15) ; y1=RR(1.5) 
         ## Draw the axes manually (since  can't figure out how to do it automatically)
@@ -69,8 +72,11 @@ def draw_fundamental_domain(N,group='Gamma0',model="H",axes=None,filename=None,*
         ## ticks
         ax = ax + line([[-0.5,-0.01],[-0.5,0.01]],color='black')
         ax = ax + line([[0.5,-0.01],[0.5,0.01]],color='black')
-        g = g + ax 
-        t = text(name, (0, -0.1), fontsize=16, color='black')
+        g = g + ax
+	if model=="H":
+		t = text(name, (0, -0.1), fontsize=16, color='black')
+	else:
+		t = text(name, (0, -1.1), fontsize=16, color='black')		
         g = g + t
         g.set_aspect_ratio(1)
         g.set_axes_range(x0,x1,y0,y1)
@@ -116,7 +122,6 @@ def _draw_funddom(coset_reps,format="S"):
     tri=c0+l1+l3+l2
     g=g+tri
     for A in coset_reps:
-        #print  "A=",A
         [a,b,c,d]=A
         if(a==1  and b==0  and c==0  and d==1 ):
             continue
@@ -140,12 +145,8 @@ def _draw_funddom(coset_reps,format="S"):
             x2_t=(a*c*(x2**2 +y2**2 )+(a*d+b*c)*x2+b*d)/den
             y2_t=y2/den
             inf_t=a/c
-            #print "A=",A
-            #print "arg1=",x1_t,y1_t,x2_t,y2_t
             c0=_geodesic_between_two_points(x1_t,y1_t,x2_t,y2_t)
-            #print "arg1=",x1_t,y1_t,inf_t
             c1=_geodesic_between_two_points(x1_t,y1_t,inf_t,0. )
-            #print "arg1=",x2_t,y2_t,inf_t
             c2=_geodesic_between_two_points(x2_t,y2_t,inf_t,0.0)
             tri=c0+c1+c2
             g=g+tri
@@ -240,8 +241,8 @@ def _geodesic_between_two_points(x1,y1,x2,y2):
     pi=RR.pi()
     from sage.plot.plot import line
     from sage.functions.trig import arcsin
-    #print "z1=",x1,y1
-    #print "z2=",x2,y2
+    #logging.debug("z1=%s,%s" % (x1,y1))
+    #logging.debug("z2=%s,%s" % (x2,y2))
     if( abs(x1-x2)< 1E-10):
         # The line segment [x=x1, y0<= y <= y1]
         return line([[x1,y1],[x2,y2]])  #[0,0,x0,infinity]
@@ -267,8 +268,8 @@ def _geodesic_between_two_points(x1,y1,x2,y2):
     tmid = (t1+t2)*RR(0.5)
     a0=min(t1,t2)
     a1=max(t1,t2)
-    #print "c,r=",c,r
-    #print "t1,t2=",t1,t2
+    #logging.debug("c,r=%s,%s" % (c,r))
+    #logging.debug("t1,t2=%s,%s"%(t1,t2))
     return _circ_arc(t1,t2,c,r)
 
 def _geodesic_between_two_points_d(x1,y1,x2,y2,z0=I):
@@ -331,11 +332,11 @@ def _geodesic_between_two_points_d(x1,y1,x2,y2,z0=I):
     r=abs(c-a)
     t1=CC(P1-c).argument()
     t2=CC(P2-c).argument()
-    #print "t1,t2=",t1,t2
+    #logging.debug("t1,t2=%s,%s" % (t1,t2))
     return _circ_arc(t1,t2,c,r)
 
 
-def _circ_arc(t0,t1,c,r,num_pts=100 ):
+def _circ_arc(t0,t1,c,r,num_pts=5000 ):
     r""" Circular arc
     INPUTS:
     - ''t0'' -- starting parameter
@@ -441,6 +442,6 @@ def nice_coset_reps(G):
                 break
         # If we missed something (which is unlikely)        
         if(len(cl)<>G.index()):
-            print "cl=",cl
+            logging.info("cl=%s" % cl)
             raise ValueError,"Problem getting coset reps! Need %s and got %s" %(G.index(),len(cl))
         return cl

@@ -1,39 +1,27 @@
 {% extends 'homepage.html' %}
 
-
 {% block content %}
-<!--    <div id="header">
-        <div class="logo">
-            <a href="/L">{{ info.objecttitle }} home</a>
-        </div>
-        <div class="banner">
-            <span>The logo of the portal could go here... </span>
-        </div>
-    </div>
-    <div id="Content">
-        <h1>
-            {{ info.title }}
-        </h1>-->
-        <!--{{ info.degree_list|safe }}-->
-
-    
 <h2> Browse </h2>
 
-<h3>By degree</h3><table cellpadding = "10"><tr>
-{% for r in info.degree_list: %}
-<td><a href="degree{{r}}">{{r}}</a></td>
-{% endfor %}
-</tr>
+<h3>By degree</h3>
+<table>
+ <tr>
+  {% for r in info.degree_list: %}
+    <td style="text-align: center;">
+       <a style="width: 2em;" href="degree{{r}}">{{r}}</a>
+    </td>
+  {% endfor %}
+ </tr>
 </table>
 <p>
 
 <h3>By type</h3>
-<table cellpadding ="10">
+<table>
 {% for i in info.l: %}
 <tr>
-{% for t in info.type_table[i]: %}
-<td><a href="{{t.link}}">{{t.title|safe}}</a></td>
-{% endfor %}
+  {% for t in info.type_table[i]: %}
+  <td><a  style="padding: 5px;" href="{{t.link}}">{{t.title|safe}}</a></td>
+  {% endfor %}
 <tr>
 {% endfor %}
 </table>
@@ -76,40 +64,40 @@
 
 
 
-<!--<h2>Search by label</h2>
+{#
+<h2>Search by label</h2>
 
 <form>
 <input type='text' name='natural' size=60>
 <p>
 <input type='submit' name='search value='search by label'>
--->
 
-<!--
 <input type='submit' name='lucky' value="search by label">
--->
 </form>
+#}
 
 
 
-<!--
-<p>
-By signature: 
-{% for t in info.signature_list: %}
-<a href="?signature={{t}}">{{t}}</a>
-{% endfor %}
+{#
+  <p>
+  By signature: 
+  {% for t in info.signature_list: %}
+  <a href="?signature={{t}}">{{t}}</a>
+  {% endfor %}
+  
+  <p>
+  By discriminant: 
+  {% for r in info.discriminant_list: %}
+  <a href="?discriminant={{r}}">{{r}}</a>
+  {% endfor %}
+  
+  <p>
+  By class number: 
+  {% for r in info.class_number_list: %}
+  <a href="?class_number={{r}}">{{r}}</a>
+  {% endfor %}
+#}
 
-<p>
-By discriminant: 
-{% for r in info.discriminant_list: %}
-<a href="?discriminant={{r}}">{{r}}</a>
-{% endfor %}
-
-<p>
-By class number: 
-{% for r in info.class_number_list: %}
-<a href="?class_number={{r}}">{{r}}</a>
-{% endfor %}
--->
 {% endblock %}
 
 

@@ -6,7 +6,10 @@ import re
 import pymongo
 import bson
 #import web_modforms
+import utils
 from classical_modular_forms.backend.web_modforms import *
+
+logger = utils.make_logger("LF")
 
 class WebLfunction:
     """Class for presenting an L-function on a web page
@@ -60,31 +63,36 @@ class WebLfunction:
              
         elif self.type=='gl2maass':
             self.id = dict["id"]
-	    self.maassL()
+            self.maassL()
              
-	elif self.type=='riemann':
-	    if "numcoeff" in dict.keys():
-	        self.numcoeff = int(dict['numcoeff'])
-	    else:
-		self.numcoeff = 20 # set default to 20 coefficients
-	    self.riemannzeta()
+        elif self.type=='riemann':
+            if "numcoeff" in dict.keys():
+                self.numcoeff = int(dict['numcoeff'])
+            else:
+                self.numcoeff = 20 # set default to 20 coefficients
+                self.riemannzeta()
 
-	elif self.type=='ellipticcurve':
-	    self.label = dict['label']
-	    if "numcoeff" in dict.keys():
-	        self.numcoeff = int(dict['numcoeff'])
-	    else:
-		self.numcoeff = 20 # set default to 20 coefficients
-	    self.ellipticcurveL()
+        elif self.type=='ellipticcurve':
+            self.label = dict['label']
+            if "numcoeff" in dict.keys():
+                self.numcoeff = int(dict['numcoeff'])
+            else:
+                self.numcoeff = 20 # set default to 20 coefficients
+                self.ellipticcurveL()
 
-	elif self.type=='dirichlet':
-	    self.charactermodulus = int(dict['charactermodulus'])
-	    self.characternumber = int(dict['characternumber'])
-	    if "numcoeff" in dict.keys():
-	        self.numcoeff = int(dict['numcoeff'])
-	    else:
-		self.numcoeff = 20 # set default to 20 coefficients
-	    self.dirichletL()
+        elif self.type=='dirichlet':
+            self.charactermodulus = int(dict['charactermodulus'])
+            self.characternumber = int(dict['characternumber'])
+            if "numcoeff" in dict.keys():
+                self.numcoeff = int(dict['numcoeff'])
+            else:
+                self.numcoeff = 20 # set default to 20 coefficients
+                self.dirichletL()
+
+        elif self.type=='dedekind':
+            # self.id = dict["id"]
+            self.label = dict['label']
+            self.dedekindL()
 
         else:
             raise KeyError 
@@ -123,15 +131,16 @@ class WebLfunction:
         self.degree = 2
         self.poles = []
         self.residues = []
-        self.numcoeff = 30 #just testing
+        self.numcoeff = 30 #just testing  NB: Need to learn how to use more coefficients
         self.dirichlet_coefficients = []
         # now, begin appending list of Dirichlet coefficients
         degree = self.MF.degree()  #number of forms in the Galois orbit
         if degree == 1:
-           self.dirichlet_coefficients = self.MF.q_expansion_embeddings() #when coeffs are rational, q_expansion_embedding() is the list of Fourier coefficients
+           self.dirichlet_coefficients = self.MF.q_expansion_embeddings(self.numcoeff) #when coeffs are rational, q_expansion_embedding() is the list of Fourier coefficients
         else:
            for n in range(0,self.numcoeff):
-              self.dirichlet_coefficients.append(self.MF.q_expansion_embeddings()[n][self.number])
+              logger.info("n=%s  self.number = %s" % (n, self.number))
+              self.dirichlet_coefficients.append(self.MF.q_expansion_embeddings(self.numcoeff)[n][self.number])
         for n in range(0,len(self.dirichlet_coefficients)):
             an = self.dirichlet_coefficients[n]
             self.dirichlet_coefficients[n]=float(an)/float((n+1)**self.automorphyexp)
@@ -173,45 +182,92 @@ class WebLfunction:
             self.characternumber = int(data['Character'])
         if self.level > 1:
             self.fricke = data['Fricke']  #no fricke for level 1
-# end of database input
+        # end of database input
 
         self.coefficient_type = 2
         self.selfdual = True
         self.quasidegree = 2
         self.Q_fe = float(sqrt(self.level))/float(math.pi)
-	if self.symmetry =="odd":
-	    aa=1
-	else:
-	    aa=0
-	if aa==0:
-	    self.sign = 1
-	else:
-	    self.sign = -1
-	if self.level > 1:
-	    self.sign = self.fricke * self.sign
-        self.kappa_fe = [0.5,0.5]
-        self.lambda_fe = [0.5*aa + self.eigenvalue*I, 0,5*aa - self.eigenvalue*I]
-        self.mu_fe = [aa + 2*self.eigenvalue*I, aa -2*self.eigenvalue*I]
-        self.nu_fe = []
-        self.langlands = True
-        self.degree = 2
-        self.poles = []
-        self.residues = []
-        self.coefficient_period = 0
-# determine if the character is real (i.e., if the L-function is selfdual)
-	self.checkselfdual()
-        self.texname = "L(s,f)"
-        self.texnamecompleteds = "\\Lambda(s,f)"
-        if self.selfdual:
-            self.texnamecompleted1ms = "\\Lambda(1-s,f)"
+        if self.symmetry =="odd":
+            aa=1
         else:
-            self.texnamecompleted1ms = "\\Lambda(1-s,\\overline{f})"
-        self.title = "$L(s,f)$, where $f$ is a Maass cusp form with level "+str(self.level)+", and eigenvalue "+str(self.eigenvalue)
+            aa=0
+        if aa==0:
+            self.sign = 1
+        else:
+            self.sign = -1
+        if self.level > 1:
+            self.sign = self.fricke * self.sign
+            self.kappa_fe = [0.5,0.5]
+            self.lambda_fe = [0.5*aa + self.eigenvalue*I, 0,5*aa - self.eigenvalue*I]
+            self.mu_fe = [aa + 2*self.eigenvalue*I, aa -2*self.eigenvalue*I]
+            self.nu_fe = []
+            self.langlands = True
+            self.degree = 2
+            self.poles = []
+            self.residues = []
+            self.coefficient_period = 0
+            # determine if the character is real (i.e., if the L-function is selfdual)
+            self.checkselfdual()
+            self.texname = "L(s,f)"
+            self.texnamecompleteds = "\\Lambda(s,f)"
+            if self.selfdual:
+                self.texnamecompleted1ms = "\\Lambda(1-s,f)"
+            else:
+                self.texnamecompleted1ms = "\\Lambda(1-s,\\overline{f})"
+            self.title = "$L(s,f)$, where $f$ is a Maass cusp form with level "+str(self.level)+", and eigenvalue "+str(self.eigenvalue)
+
+#===========================
+    def dedekindL(self): # added by DK
+        import base
+        connection = base.getDBConnection()
+        db = connection.numberfields.fields
+        poly_coeffs = db.find_one({'label':self.label})['coefficients']
+        R = QQ['x']; (x,) = R._first_ngens(1)
+        self.polynomial = sum([poly_coeffs[i]*x**i for i in range(len(poly_coeffs))])
+        self.NF = NumberField(self.polynomial, 'a')
+        self.signature = self.NF.signature()
+        self.sign = 1
+        self.quasidegree = sum(self.signature)
+        self.level = self.NF.discriminant().abs()
+        self.degreeofN = self.NF.degree()
+
+        self.Q_fe = float(sqrt(self.level)/(2**(self.signature[1]) * (math.pi)**(float(self.degreeofN)/2.0)))
+
+        self.kappa_fe = self.signature[0]* [0.5] + self.signature[1] * [1]
+        self.lambda_fe = self.quasidegree * [0]
+        self.mu_fe = self.signature[0]*[0] # not in use?
+        self.nu_fe = self.signature[1]*[0] # not in use?
+        self.langlands = True
+        self.degree = self.signature[0] + 2 * self.signature[1] # N = r1 +2r2
+        self.dirichlet_coefficients = [Integer(x) for x in self.NF.zeta_coefficients(5000)]
+        self.h=self.NF.class_number()
+        self.R=self.NF.regulator()
+        self.w=len(self.NF.roots_of_unity())
+        self.h=self.NF.class_number()
+        self.res=RR(2**self.signature[0]*self.h*self.R/self.w) #r1 = self.signature[0]
+
+        self.poles = [1,0]
+        self.residues = [self.res,-self.res]
+        self.coefficient_period = 0
+        self.selfdual = True
+        self.coefficient_type = 0
+        self.texname = "\\zeta_K(s)"
+        self.texnamecompleteds = "\\Lambda_K(s)"
+        if self.selfdual:
+            self.texnamecompleted1ms = "\\Lambda_K(1-s)"
+        else:
+            self.texnamecompleted1ms = "\\Lambda_K(1-s)"
+        self.title = "Dedekind zeta-function: $\\zeta_K(s)$"
+        self.title = self.title+", where $K$ is the "+ str(self.NF)
+        self._set_properties()
+        self.credit = 'Sage'
+        self.citation = ''
 
 #===========================
                                                
     def ellipticcurveL(self):
-	self.E = EllipticCurve(str(self.label))
+        self.E = EllipticCurve(str(self.label))
         self.quasidegree = 1
         self.level = self.E.conductor()
         self.Q_fe = float(sqrt(self.level)/(2*math.pi))
@@ -222,12 +278,12 @@ class WebLfunction:
         self.nu_fe = [0.5]
         self.langlands = True
         self.degree = 2
-#okay up to here
+        #okay up to here
         self.dirichlet_coefficients = self.E.anlist(self.numcoeff)[1:]  #remove a0
-	for n in range(0,len(self.dirichlet_coefficients)-1):
-	   an = self.dirichlet_coefficients[n]
-	   self.dirichlet_coefficients[n]=float(an)/float(sqrt(n+1))
-	   
+        for n in range(0,len(self.dirichlet_coefficients)-1):
+           an = self.dirichlet_coefficients[n]
+           self.dirichlet_coefficients[n]=float(an)/float(sqrt(n+1))
+       
         self.poles = []
         self.residues = []
         self.coefficient_period = 0
@@ -238,21 +294,21 @@ class WebLfunction:
         self.texnamecompleted1ms = "\\Lambda(1-s,E)"
         self.title = "L-function $L(s,E)$ for the Elliptic Curve over Q with label "+ self.E.label()
 
-        self.properties = ['Degree ','%s<br><br>' % self.degree]
-        self.properties.extend(['Level ', '%s' % self.level])
+        self.properties = [('Degree ','%s' % self.degree)]
+        self.properties.append(('Level', '%s' % self.level))
         self.credit = 'Sage'
-#        self.title = self.title+", where $\\chi$ is the character modulo "+\
-#str(self.charactermodulus) + ", number " + str(self.characternumber)
+        #        self.title = self.title+", where $\\chi$ is the character modulo "+\
+        #str(self.charactermodulus) + ", number " + str(self.characternumber)
         self.specialvalues =  'test'#'L(1/2) = '+str(self.sageLfunction.value(.5))
         
 
 #===========================
 
     def dirichletL(self):
-	chi = DirichletGroup(self.charactermodulus)[self.characternumber]
-# Warning: will give nonsense if character is not primitive
-	aa = int((1-chi(-1))/2)   # usually denoted \frak a
-#        self.coefficient_type = 0
+        chi = DirichletGroup(self.charactermodulus)[self.characternumber]
+        # Warning: will give nonsense if character is not primitive
+        aa = int((1-chi(-1))/2)   # usually denoted \frak a
+        # self.coefficient_type = 0
         self.quasidegree = 1
         self.Q_fe = float(sqrt(self.charactermodulus)/sqrt(math.pi))
         self.sign = 1/(I**aa * float(sqrt(self.charactermodulus))/(chi.gauss_sum_numerical()))
@@ -270,55 +326,55 @@ class WebLfunction:
         self.residues = []
         self.coefficient_period = self.charactermodulus
         self.coefficient_period = 0
-	chivals=chi.values_on_gens()
-  # determine if the character is real (i.e., if the L-function is selfdual)
+        chivals=chi.values_on_gens()
+        # determine if the character is real (i.e., if the L-function is selfdual)
         self.selfdual = True
         for v in chivals:
             if abs(imag_part(v)) > 0.0001:
                 self.selfdual = False
-  #
-	self.coefficient_type = 2
-	if self.selfdual:
-	    self.coefficient_type = 1
+  
+        self.coefficient_type = 2
+        if self.selfdual:
+            self.coefficient_type = 1
 
-        self.texname = "L(s,\\chi)"
-        self.texnamecompleteds = "\\Lambda(s,\\chi)"
-	if self.selfdual:
-	    self.texnamecompleted1ms = "\\Lambda(1-s,\\chi)"
+            self.texname = "L(s,\\chi)"
+            self.texnamecompleteds = "\\Lambda(s,\\chi)"
+        if self.selfdual:
+            self.texnamecompleted1ms = "\\Lambda(1-s,\\chi)"
         else:
             self.texnamecompleted1ms = "\\Lambda(1-s,\\overline{\\chi})"
-        self.credit = 'Sage'
-        self.title = "Dirichlet L-function: $L(s,\\chi)$"
-	self.title = (self.title+", where $\\chi$ is the character modulo "+
-                      str(self.charactermodulus) + ", number " +
-                      str(self.characternumber))
+            self.credit = 'Sage'
+            self.title = "Dirichlet L-function: $L(s,\\chi)$"
+        self.title = (self.title+", where $\\chi$ is the character modulo "+
+                          str(self.charactermodulus) + ", number " +
+                          str(self.characternumber))
 
 #===========================
                                                
     def riemannzeta(self):
-	self.coefficient_type = 1
-	self.quasidegree = 1
-	self.Q_fe = float(1/sqrt(math.pi))
-	self.sign = 1
-	self.kappa_fe = [0.5]
-	self.lambda_fe = [0]
-	self.mu_fe = [0]
-	self.nu_fe = []
-	self.langlands = True
-	self.degree = 1
-	self.level = 1
-	self.dirichlet_coefficients = []
-	for n in range(self.numcoeff):
-	    self.dirichlet_coefficients.append(1)
-	self.poles = [0,1]
-	self.residues = [-1,1]
-	self.coefficient_period = 0
-	self.selfdual = True
+        self.coefficient_type = 1
+        self.quasidegree = 1
+        self.Q_fe = float(1/sqrt(math.pi))
+        self.sign = 1
+        self.kappa_fe = [0.5]
+        self.lambda_fe = [0]
+        self.mu_fe = [0]
+        self.nu_fe = []
+        self.langlands = True
+        self.degree = 1
+        self.level = 1
+        self.dirichlet_coefficients = []
+        for n in range(self.numcoeff):
+            self.dirichlet_coefficients.append(1)
+        self.poles = [0,1]
+        self.residues = [-1,1]
+        self.coefficient_period = 0
+        self.selfdual = True
         self.texname = "\\zeta(s)"
         self.texnamecompleteds = "\\xi(s)"
         self.texnamecompleted1ms = "\\xi(1-s)"
         self.credit = 'Sage'
-	self.title = "Riemann Zeta-function: $\\zeta(s)$"
+        self.title = "Riemann Zeta-function: $\\zeta(s)$"
 
 #===========================
                                                
@@ -375,15 +431,15 @@ class WebLfunction:
         self.degree = int(round(2*sum(self.kappa_fe)))
 
         self.level = int(round(math.pi**float(self.degree) * 4**len(self.nu_fe) * self.Q_fe**2 ))
-# note:  math.pi was not compatible with the sage type of degree
+        # note:  math.pi was not compatible with the sage type of degree
 
         self.dirichlet_coefficients = splitcoeff(lines[-1])
         
-# check for selfdual
-	self.checkselfdual()
-#	
-	if self.selfdual:
-	    self.texnamecompleted1ms = "\\Lambda(1-s)"  # default name.  will be set later, for most L-functions
+        # check for selfdual
+        self.checkselfdual()
+        #   
+        if self.selfdual:
+            self.texnamecompleted1ms = "\\Lambda(1-s)"  # default name.  will be set later, for most L-functions
 
         try:
             self.originalfile = re.match(".*/([^/]+)$", self.url)
@@ -399,37 +455,37 @@ class WebLfunction:
     def createLcalcfile(self):
         thefile="";
         if self.selfdual:
-            thefile = thefile + "2\n"  # 2 means real coefficients
+            thefile += "2\n"  # 2 means real coefficients
         else:
-            thefile = thefile + "3\n"  # 3 means complex coefficients
+            thefile += "3\n"  # 3 means complex coefficients
 
-        thefile = thefile + "0\n"  # 0 means unknown type
+        thefile += "0\n"  # 0 means unknown type
 
-        thefile = thefile + str(len(self.dirichlet_coefficients)) + "\n"  
+        thefile += str(len(self.dirichlet_coefficients)) + "\n"  
 
-        thefile = thefile + "0\n"  # assume the coefficients are not periodic
+        thefile += "0\n"  # assume the coefficients are not periodic
         
-        thefile = thefile + str(self.quasidegree) + "\n"  # number of actual Gamma functions
+        thefile += str(self.quasidegree) + "\n"  # number of actual Gamma functions
 
         for n in range(0,self.quasidegree):
             thefile = thefile + str(self.kappa_fe[n]) + "\n"
             thefile = thefile + str(real_part(self.lambda_fe[n])) + " " + str(imag_part(self.lambda_fe[n])) + "\n"
         
-        thefile = thefile + str(real_part(self.Q_fe)) +  "\n"
+        thefile += str(real_part(self.Q_fe)) +  "\n"
 
-        thefile = thefile + str(real_part(self.sign)) + " " + str(imag_part(self.sign)) + "\n"
+        thefile += str(real_part(self.sign)) + " " + str(imag_part(self.sign)) + "\n"
 
-        thefile = thefile + str(len(self.poles)) + "\n"  # counts number of poles
+        thefile += str(len(self.poles)) + "\n"  # counts number of poles
 
         for n in range(0,len(self.poles)):
-            thefile = thefile + str(real_part(self.poles[n])) + " " + str(imag_part(self.poles[n])) + "\n" #pole location
-            thefile = thefile + str(real_part(self.residues[n])) + " " + str(imag_part(self.residues[n])) + "\n" #residue at pole
+            thefile += str(real_part(self.poles[n])) + " " + str(imag_part(self.poles[n])) + "\n" #pole location
+            thefile += str(real_part(self.residues[n])) + " " + str(imag_part(self.residues[n])) + "\n" #residue at pole
 
         for n in range(0,len(self.dirichlet_coefficients)):
-            thefile = thefile + str(real_part(self.dirichlet_coefficients[n]))   # add real part of Dirichlet coefficient
+            thefile += str(real_part(self.dirichlet_coefficients[n]))   # add real part of Dirichlet coefficient
             if not self.selfdual:  # if not selfdual
-                thefile = thefile + " " + str(imag_part(self.dirichlet_coefficients[n]))   # add imaginary part of Dirichlet coefficient
-            thefile = thefile + "\n" 
+                thefile += " " + str(imag_part(self.dirichlet_coefficients[n]))   # add imaginary part of Dirichlet coefficient
+            thefile += "\n" 
         
         return(thefile)
 
@@ -437,7 +493,7 @@ class WebLfunction:
 #=============== whether L-function is selfdual
                                                
     def checkselfdual(self):
-	self.selfdual = True
+        self.selfdual = True
         for n in range(1,min(8,len(self.dirichlet_coefficients))):
             if abs(imag_part(self.dirichlet_coefficients[n]/self.dirichlet_coefficients[0])) > 0.00001:
                 self.selfdual = False
@@ -456,70 +512,69 @@ class WebLfunction:
             prim = 'Primitive'
         else:
             prim = 'Not primitive'
-        self.properties = ['Degree: ',deg]
-        self.properties.extend(['<br>', sd])
-        self.properties.extend(['<br>Level: ', ll])
-        self.properties.extend(['<br>Sign: ',sg])
-        self.properties.extend(['<br>',prim])
+        self.properties =    [ ('Degree',    deg)]
+        self.properties.append((None,        sd))
+        self.properties.append(('Level',     ll))
+        self.properties.append(('Sign',      sg))
+        self.properties.append((None,        prim))
 
 
 # 
 #===============
 
     def lfuncDStex(self,fmt):
-        numperline = 4
+        numperline = 3
         numcoeffs=min(10,len(self.dirichlet_coefficients))
-	if self.selfdual:
-	    numperline = 9
+        if self.selfdual:
+            numperline = 7
             numcoeffs=min(20,len(self.dirichlet_coefficients))
-        ans=""
+            ans=""
         if fmt=="analytic" or fmt=="langlands":
-	    ans="\\begin{align}\n"
-	    ans=ans+self.texname+"="+seriescoeff(self.dirichlet_coefficients[0],0,"literal","",-6,5)+"\\mathstrut&"
-	    for n in range(1,numcoeffs):
-	        ans=ans+seriescoeff(self.dirichlet_coefficients[n],n+1,"series","dirichlet",-6,5)
-	        if(n % numperline ==0):
-		    ans=ans+"\\cr\n"
-		    ans=ans+"&"
-	    ans=ans+"+ \\ \\cdots\n\\end{align}"
+            ans="\\begin{align}\n"
+            ans=ans+self.texname+"="+seriescoeff(self.dirichlet_coefficients[0],0,"literal","",-6,5)+"\\mathstrut&"
+            for n in range(1,numcoeffs):
+                ans=ans+seriescoeff(self.dirichlet_coefficients[n],n+1,"series","dirichlet",-6,5)
+                if(n % numperline ==0):
+                    ans=ans+"\\cr\n"
+                    ans=ans+"&"
+            ans=ans+" + \\ \\cdots\n\\end{align}"
 
-	elif fmt=="abstract":
-	   if self.type=="riemann":
-		ans="\\begin{equation} \n \\zeta(s) = \\sum_{n=1}^{\\infty} n^{-s} \n \\end{equation} \n"
+        elif fmt=="abstract":
+           if self.type=="riemann":
+            ans="\\begin{equation} \n \\zeta(s) = \\sum_{n=1}^{\\infty} n^{-s} \n \\end{equation} \n"
 
-	   elif self.type=="dirichlet":
-		ans="\\begin{equation} \n L(s,\\chi) = \\sum_{n=1}^{\\infty} \\chi(n) n^{-s} \n \\end{equation}"
-		ans = ans+"where $\\chi$ is the character modulo "+ str(self.charactermodulus)
-		ans = ans+", number "+str(self.characternumber)+"." 
+           elif self.type=="dirichlet":
+            ans="\\begin{equation} \n L(s,\\chi) = \\sum_{n=1}^{\\infty} \\chi(n) n^{-s} \n \\end{equation}"
+            ans = ans+"where $\\chi$ is the character modulo "+ str(self.charactermodulus)
+            ans = ans+", number "+str(self.characternumber)+"." 
 
-	   else:
-		ans="\\begin{equation} \n "+self.texname+" = \\sum_{n=1}^{\\infty} a(n) n^{-s} \n \\end{equation}"
+           else:
+            ans="\\begin{equation} \n "+self.texname+" = \\sum_{n=1}^{\\infty} a(n) n^{-s} \n \\end{equation}"
         return(ans)
-	
 
 #---------
 
     def lfuncEPtex(self,fmt):
         ans=""
         if fmt=="abstract":
-	   ans="\\begin{equation} \n "+self.texname+" = "
+           ans="\\begin{equation} \n "+self.texname+" = "
            if self.type=="riemann":
                 ans= ans+"\\prod_p (1 - p^{-s})^{-1}"
            elif self.type=="dirichlet":
                 ans= ans+"\\prod_p (1- \\chi(p) p^{-s})^{-1}"
 
-	   elif self.type=="gl2maass":
-                ans= ans+"\\prod_p (1- a(p) p^{-s} + p^{-2s})^{-1}"
+           elif self.type=="gl2maass":
+                   ans= ans+"\\prod_p (1- a(p) p^{-s} + p^{-2s})^{-1}"
 
-	   elif self.type=="gl3maass":
-                ans= ans+"\\prod_p (1- a(p) p^{-s} + \\overline{a(p)} p^{-2s} - p^{-3s})^{-1}"
+           elif self.type=="gl3maass":
+                   ans= ans+"\\prod_p (1- a(p) p^{-s} + \\overline{a(p)} p^{-2s} - p^{-3s})^{-1}"
 
            elif self.langlands:
-                ans= ans+"\\prod_p \\ \\prod_{j=1}^{"+str(self.degree)+"} (1 - \\alpha_{j,p}\\,  p^{-s})^{-1}"
-           
+                   ans= ans+"\\prod_p \\ \\prod_{j=1}^{"+str(self.degree)+"} (1 - \\alpha_{j,p}\\,  p^{-s})^{-1}"
+              
            else:
-		return("No information is available about the Euler product.")
-	   ans=ans+" \n \\end{equation}"
+               return("No information is available about the Euler product.")
+           ans=ans+" \n \\end{equation}"
            return(ans)
         else:
            return("No information is available about the Euler product.")
@@ -532,37 +587,38 @@ class WebLfunction:
 
     def lfuncFEtex(self,fmt):
         """ lfuncFEtex(fmt) is the functional equation in the chosen format:
-    analytic, selberg, 
-"""
+        analytic, selberg, 
+        """
         ans=""
         if fmt=="analytic":
             ans="\\begin{align}\n"+self.texnamecompleteds+"=\\mathstrut &"
-	    if self.level>1:
-               ans=ans+latex(self.level)+"^{\\frac{s}{2}}"
+            if self.level>1:
+                ans+=latex(self.level)+"^{\\frac{s}{2}}"
             for mu in self.mu_fe:
-               ans=ans+"\Gamma_R(s"+seriescoeff(mu,0,"signed","",-6,5)+")"
+               ans += "\Gamma_R(s"+seriescoeff(mu,0,"signed","",-6,5)+")"
             for nu in self.nu_fe:
-               ans=ans+"\Gamma_C(s"+seriescoeff(nu,0,"signed","",-6,5)+")"
-            ans=ans+"\\cdot "+self.texname+"\\cr\n"
-            ans=ans+"=\\mathstrut & "+seriescoeff(self.sign,0,"factor","",-6,5)+\
-self.texnamecompleted1ms+"\n\\end{align}\n"
-	elif fmt=="selberg":
-	    ans=ans+"("+str(int(self.degree))+","
-	    ans=ans+str(int(self.level))+","
-	    ans=ans+"("
-	    if self.mu_fe != []:
-	        for mu in range(len(self.mu_fe)-1):
-		    ans=ans+seriescoeff(self.mu_fe[mu],0,"literal","",-6,5)+", "
-	        ans=ans+seriescoeff(self.mu_fe[-1],0,"literal","",-6,5)
-	    ans = ans+":"
-	    if self.nu_fe != []:
-	        for nu in range(len(self.nu_fe)-1):
-		    ans=ans+str(self.mu_fe[nu])+", "
-	        ans=ans+str(self.nu_fe[-1])
-	    ans = ans+"), "
-	    ans = ans+seriescoeff(self.sign, 0, "literal","", -6,5)
-	    ans = ans+")"
-	return(ans)
+               ans += "\Gamma_C(s"+seriescoeff(nu,0,"signed","",-6,5)+")"
+            ans += " \\cdot "+self.texname+"\\cr\n"
+            ans += "=\\mathstrut & "+seriescoeff(self.sign,0,"factor","",-6,5)
+            ans += self.texnamecompleted1ms+"\n\\end{align}\n"
+        elif fmt=="selberg":
+            ans+="("+str(int(self.degree))+","
+            ans+=str(int(self.level))+","
+            ans+="("
+            if self.mu_fe != []:
+                for mu in range(len(self.mu_fe)-1):
+                    ans+=seriescoeff(self.mu_fe[mu],0,"literal","",-6,5)+", "
+                    ans+=seriescoeff(self.mu_fe[-1],0,"literal","",-6,5)
+            ans = ans+":"
+            if self.nu_fe != []:
+                for nu in range(len(self.nu_fe)-1):
+                    ans+=str(self.mu_fe[nu])+", "
+                    ans+=str(self.nu_fe[-1])
+            ans+="), "
+            ans+=seriescoeff(self.sign, 0, "literal","", -6,5)
+            ans+=")"
+        logger.debug("latex %s: %s" % (fmt, ans))
+        return(ans)
                            
 #++++++++++++++++++++++++++++++
 
