@@ -1,0 +1,99 @@
+{% extends "homepage.html" %}
+
+{% block content %}
+
+<style>
+  input.editable {
+    border: 1px ;
+    text-decoration:none; 
+    font-family: sans-serif;
+    font-size: 11pt;
+    width:100%
+  }
+  *.editable:hover {
+    background-color: #ffffcc;
+  }
+  textarea.editable {
+    border: 1px ;
+    text-decoration:none;
+    width:100%;
+    font-family: monospace;
+  }
+</style>
+
+<script>
+  function updateMetadata(id, property, value) {
+    jQuery.get("updateMetadata", {id: id, property: property, value: value});
+  }
+</script>
+
+{% macro editable(entry, property) %}
+  <input class=editable value="{{entry.metadata[property]}}" onchange="updateMetadata('{{entry._id}}', '{{property}}', this.value)"/>
+{% endmacro %}
+
+{% macro editableTextarea(entry, property) %}
+  <textarea rows={{entry.metadata[property].count('\n')+1}} class=editable onchange="updateMetadata('{{entry._id}}', '{{property}}', this.value)">
+{{entry.metadata[property]}}
+  </textarea>
+{% endmacro %}
+
+
+
+{% macro render_uploadlist(title, list) -%}
+
+<h2> {{ title }} </h2>
+
+{% for entry in list %}
+<dl class=propertylist>
+  <dt>Name</dt>
+  <dd>{{editable(entry,'name')}}</dd>
+  <dt>Original file name</dt>
+  <dd>{{editable(entry,'original_file_name')}}</dd>
+  <dt>Description</dt>
+  <dd>{{editable(entry,'full_description')}}</dd>
+  <dt>Data format explanation</dt>
+  <dd>{{editable(entry,'data_format')}}</dd>
+  <dt>Creator</dt>
+  <dd>{{editable(entry,'creator')}}</dd>
+  <dt>Paper reference</dt>
+  <dd>{{editable(entry,'reference')}}</dd>
+  <dt>BibTeX</dt>
+  <dd>{{editableTextarea(entry,'bibtex')}}</pre></dd>
+  <dt>Contents</dt>
+  <dd>
+    <a href="download/{{entry._id}}/{{entry.filename}}">
+      Download {{entry.filename}}
+    </a>
+    <br/>
+    {% if entry.metadata.content_type == 'text/plain' %}
+      <pre>
+{{entry.read()}}
+      </pre>
+    {% elif entry.metadata.content_type == 'image/jpeg' %}
+      <img src="download/{{entry._id}}/{{entry.filename}}"/>
+    {% endif %}
+  </dd>
+  {{ caller(entry) }}
+</dl>
+{% endfor %}
+{%- endmacro %}
+
+
+{% call(entry) render_uploadlist('Awaiting approval', unmoderated) %}
+  <dt>Action</dt>
+  <dd>
+    <form action="{{ url_for('.admin_update') }}" method="post">
+      <input type="hidden" name="id" value="{{entry._id}}"/>
+      <button type="submit" name="approve" value="yes">Approve</button>
+      <button type="submit" name="disapprove" value="yes">Disapprove</button>
+    </form>
+  </dd>
+{% endcall %}
+
+
+{% call(entry) render_uploadlist('Approved', approved) %}
+{% endcall %}
+{% call(entry) render_uploadlist('Disapproved', disapproved) %}
+{% endcall %}
+
+{% endblock %}
