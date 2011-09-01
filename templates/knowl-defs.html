@@ -1,0 +1,52 @@
+{# 
+   the following KNOWL macro enables to tag certain locations in the
+   HTML documents to reference to saved "Knowls". They contain all
+   the information and form the stored knowledge. The macro itself
+   is only there for the presentation of the data via suitable
+   HTML tags and associated javascript code.
+#}
+{% macro KNOWL(knowlid, tag='span', title=none) -%}
+  {% with knowl = Knowl(knowlid) -%}
+    {% if knowl.exists() -%}
+      {% if title is none -%}
+         <{{tag}} class="knowl-title">{{ knowl.title }}</{{tag}}>
+      {%- else -%}
+        {% if title|length > 0 -%}
+         <{{tag}} class="knowl-title">{{ title }}</{{tag}}>
+        {%- endif %}
+      {%- endif %}
+      <span knowl="{{ knowl.id }}" class="knowl-qm">?</span>
+
+    {%- else -%}
+      {# knowl does not exist. wrong knowlid or opportunity to create one! #}
+      <{{tag}} class="knowl knowl-error">
+        {% if user.is_authenticated() -%}
+          [ERROR: Knowl with ID '{{knowlid}}' does not exist. Wrong ID or
+          <a href="{{ url_for('knowledge.edit', ID=knowlid) }}">create a new one</a>.]
+        {%- else -%}
+          ['{{knowlid}}' missing ]
+        {%- endif %}
+      </{{tag}}>
+    {%- endif %}
+  {%- endwith %}
+{%- endmacro %}
+
+{# for the bar when editing or showing knowls #}
+{% macro knowlbar() -%}
+ <div class="knowl-bar">
+   Actions: 
+   <a title="as it will be used for transculsioins" href="{{ url_for('.render', ID=k.id) }}">render</a> 
+   &middot;
+   <a title="like as a wiki would" href="{{ url_for('.show', ID=k.id) }}">show</a>
+   {% if user.is_authenticated() %}
+     &middot;
+     <a href="{{ url_for('.edit', ID=k.id) }}">edit</a>
+   {% endif %}
+   {% if user.is_admin() %}
+     &middot;
+     <a onclick='return confirm("Really delete Knowl {{ k.id }}? There is no way back!");'
+            href="{{ url_for('.delete', ID=k.id) }}">delete</a>
+   {% endif %}
+</div>
+{%- endmacro %}
+
