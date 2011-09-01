@@ -19,7 +19,7 @@ import maass_waveforms
 import users 
 import knowledge
 import upload
-
+import DirichletCharacter
 import raw
 
 import sys
@@ -30,7 +30,7 @@ def not_found(error):
 
 @app.route("/")
 def index():
-    return render_template('index.html', title ="Index")
+    return render_template('index.html', title ="Homepage", bread=None)
 
 def root_static_file(name):
     def static_fn():
@@ -78,6 +78,12 @@ def form_example():
     sidebar = [ ('topic1' , [ ("abc", "#"), ("def", "#")]), ("topic2" , [ ("ghi", "#"), ("jkl", "#") ] ) ]
     info = {'sidebar' : sidebar}
     return render_template("form.html", info=info)
+
+@app.route("/Character/Dirichlet/")
+@app.route("/Character/Dirichlet/<arg1>")
+@app.route("/Character/Dirichlet/<arg1>/<arg2>")
+def render_Character(arg1 = None, arg2 = None):
+    return DirichletCharacter.render_webpage(request,arg1,arg2)
 
 @app.route("/Lfunction/")
 @app.route("/Lfunction/<arg1>")
@@ -218,6 +224,7 @@ def main():
     
     import base
     base._init(dbport)
+    logging.info("... done.")
 
     # just for debugging
     #if options["debug"]:
@@ -237,3 +244,6 @@ else:
     import base
     base._init(37010)
     app.logger.addHandler(file_handler)
+
+def getDownloadsFor(path):
+  return "bar"

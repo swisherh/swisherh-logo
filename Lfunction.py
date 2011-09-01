@@ -14,6 +14,7 @@ from utils import to_dict
 #from elliptic_curve import by_cremona_label
 # just testing
 
+##import upload2Db.py
 
 
 cremona_label_regex = re.compile(r'(\d+)([a-z])+(\d*)')
@@ -32,6 +33,7 @@ def render_webpage(request, arg1, arg2, arg3, arg4, arg5):
             info["bread"] =  [('L-functions', url_for("render_Lfunction")), ('Degree '+str(degree), '/L/degree'+str(degree))]
             if degree == 1:
                 info["contents"] = [LfunctionPlot.getOneGraphHtmlChar(1,35,1,13)]
+                info['friends'] = [('Dirichlet Characters', '/Character/Dirichlet/')]
             elif degree == 2:
 #                info["contents"] = [processEllipticCurveNavigation(args),"holomorphic here"]
                 info["contents"] = [processEllipticCurveNavigation(args), LfunctionPlot.getOneGraphHtmlHolo(1, 22, 2, 14)]
@@ -279,6 +281,9 @@ def initLfunction(L,args, request):
         snum = str(L.characternumber)
         smod = str(L.charactermodulus)
         info['bread'] = [('L-function','/L'),('Dirichlet Character','/L/degree1#Dirichlet'),('Character Number '+snum+' of Modulus '+ smod,'/L/Character/Dirichlet/'+smod+'/'+snum)]
+        charname = '\(\\chi_{%s}\\!\\!\\pmod{%s}\)' %(snum,smod)
+        info['friends'] = [('Dirichlet Character '+str(charname), '/Character/Dirichlet/'+smod+'/'+snum)]
+                
 
     elif args['type'] == 'ellipticcurve':
         label = L.label
@@ -363,7 +368,10 @@ def render_plotLfunction(args):
 
 def render_browseGraph(args):
     logging.info(args)
-    data = LfunctionPlot.paintSvgFile(args['group'], int(args['level']), args['sign'])
+    if 'sign' in args:
+      data = LfunctionPlot.paintSvgFileAll([[args['group'], int(args['level']), args['sign']]])
+    else:
+      data = LfunctionPlot.paintSvgFileAll([[args['group'], int(args['level'])]])
     response = make_response(data)
     response.headers['Content-type'] = 'image/svg+xml'
     return response
