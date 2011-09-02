@@ -1,0 +1,142 @@
+{% extends 'homepage.html' %}
+{% block content %}
+
+<p>
+  A
+  <a class="knowl-title" knowl="smf.siegel_modular_form">
+    Siegel modular form
+  </a>
+  of degree 2 is a holomorphic function on the Siegel upper half plane of complex two by two matrices
+  whose imaginary part is strictly positive definite which satisfies an invariance property with respect to
+  arithmetic subgroups of <script type="math/tex">{\rm GSp}(4)</script> such as the ones listed below.
+</p>
+
+<br/>
+
+<h2>Browse</h2>
+
+<p>
+  Integral weight by group:
+  &nbsp;&nbsp;
+  <a href="{{ url_for( 'ModularForm_GSp4_Q_top_level', group = 'Sp4Z', page = 'forms') }}">
+    <script type="math/tex">{\rm Sp}(4,\mathbb{Z})</script>
+  </a>
+  &nbsp;&nbsp;
+  <a href="{{ url_for( 'ModularForm_GSp4_Q_top_level', group = 'Kp', page = 'forms') }}">
+    <script type="math/tex">K(p)</script>
+  </a>
+  &nbsp;&nbsp;
+  <a href="{{ url_for( 'ModularForm_GSp4_Q_top_level', group = 'Gamma0_2', page = 'forms') }}">
+    <script type="math/tex">\Gamma_0(2)</script>
+  </a>
+  &nbsp;&nbsp;
+  <a href="{{ url_for( 'ModularForm_GSp4_Q_top_level', group = 'Gamma0_3_psi_3', page = 'forms') }}">
+    <script type="math/tex">\Gamma_0(3),\psi_3</script>
+  </a>
+  &nbsp;&nbsp;
+  <a href="{{ url_for( 'ModularForm_GSp4_Q_top_level', group = 'Gamma0_4_psi_4', page = 'forms') }}">
+    <script type="math/tex">\Gamma_0(4),\psi_4</script>
+  </a>
+</p>
+
+<p>
+  Half integral weight by group:
+  &nbsp;&nbsp;
+  <a href="{{ url_for( 'ModularForm_GSp4_Q_top_level', group = 'Gamma0_4_', page = 'forms') }}">
+    <script type="math/tex">\Gamma_0(4),\left(\frac{-4}{*}\right)</script>
+  </a>
+</p>
+
+<p>
+  <script type="math/tex">\mathbb{C}[X,Y]</script>-valued and integral weight by group:
+  &nbsp;&nbsp;
+  <a href="{{ url_for( 'ModularForm_GSp4_Q_top_level', group = 'Sp4Z_2', page = 'forms') }}">
+    <script type="math/tex">{\rm Sp}(4,\mathbb{Z})</script>
+  </a>
+</p>
+
+<br/>
+
+<h2>Look up dimensions</h2>
+
+<script> 
+  function validate_weight()
+  {
+  var input = document.getElementById("weight_range").value;
+  if(input == '')
+  {  return false;  }
+  if(input.match(/^\d+$/))  // Only digits.
+  {
+  if(input > 1000000)
+  {
+  alert("Please enter a smaller number.");
+  return false;
+  }
+  else
+  {  return true;  }
+  }
+  else if(input.match(/^\d+\-\d+$/))  // Range, like 2-50
+  {
+  min_wt = parseInt(input.split("-")[0]);
+  max_wt = parseInt(input.split("-")[1]);
+  if(min_wt > max_wt)
+  {
+  alert("Your first weight cannot be larger than the second weight.")
+  return false;
+  }
+  else
+  {
+  if ((max_wt-min_wt + 1)*max_wt > 1000000)
+  {
+  alert("Please enter a smaller range (output would take too long to compute).");
+  return false;
+  }
+  else
+  {  return true;  }
+  }
+  }
+  else
+  {
+  alert("Please enter either a weight or a range of weights (in the form '2-50', with no spaces).");
+  return false;
+  }
+  }
+</script> 
+ 
+<form action="/ModularForm/GSp4/Q" method="get" onSubmit="return validate_weight()"> 
+  <input type="hidden" name="page" value="dimensions" /> 
+  <input type="hidden" name="level" value="17" />
+  <table> 
+    <tr>
+      <td>
+	<label>Group</label>
+	<select name="group">
+	  <option value="Sp4Z">\({\rm Sp}(4,\mathbb{Z})\)</option>
+	  <option value="Kp">\(K(p)\)</option>
+	  <option value="Gamma0_2">\(\Gamma_0(2)\)</option>
+	  <option value="Gamma0_3_psi_3">\(\Gamma_0(3),\psi_3\)</option>
+	  <option value="Gamma0_4_psi_4">\(\Gamma_0(4),\psi_4\)</option>
+	  <option value="">\(\Gamma_0(4),\left(\frac{-4}{*}\right)\)</option>
+	</select>
+      </td>
+      <td> 
+	<label>weight(s)</label>
+	<input type="text" name="weight_range" placeholder="20-30" />
+	<span class="formexample">e.g. 2 or 20-40</span>
+      </td>
+      <td> 
+	<button type="submit" value="submit">Submit</button>
+      </td>
+    </tr>
+  </table> 
+</form> 
+
+<br/>
+
+<h2>Search</h2>
+
+<p>
+  Stay tuned. Soon available.
+</p>
+
+{% endblock %}
