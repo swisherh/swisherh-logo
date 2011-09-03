@@ -15,6 +15,7 @@
 import pymongo
 import flask
 from base import app, getDBConnection
+from datetime import datetime
 from flask import render_template, render_template_string, request, abort, Blueprint, url_for, make_response
 from flaskext.login import login_required, current_user
 from knowl import Knowl
@@ -48,6 +49,27 @@ md.inlinePatterns.add('mathjax\\[', IgnorePattern(r'(\\\[.+?\\\])'), '<escape')
 @app.context_processor
 def ctx_knowledge():
   return {'Knowl' : Knowl}
+
+@app.template_filter("render_knowl")
+def render_knowl_in_template(knowl_content, **kwargs):
+  """
+  This function does the actual rendering, for render and the template_filter
+  render_knowl_in_template (ultimately for KNOWL_INC)
+  """
+  render_me = u"""\
+  {%% include "knowl-defs.html" %%}
+  {%% from "knowl-defs.html" import KNOWL with context %%}
+  {%% from "knowl-defs.html" import KNOWL_LINK with context %%}
+  {%% from "knowl-defs.html" import KNOWL_INC with context %%}
+  {%% from "knowl-defs.html" import TEXT_DATA with context %%}
+
+  %(content)s
+  """
+  # markdown enabled
+  render_me = render_me % {'content' : md.convert(knowl_content) }
+  # Pass the text on to markdown.  Note, backslashes need to be escaped for this, but not for the javascript markdown parser
+  return render_template_string(render_me, **kwargs)
+  
 
 # a jinja test for figuring out if this is a knowl or not
 # usage: {% if K is knowl_type %} ... {% endif %}
@@ -137,12 +159,13 @@ def save_form():
   k.title = request.form['title']
   k.content = request.form['content']
   k.quality = request.form['quality']
+  k.timestamp = datetime.now()
   k.save(who=current_user.get_id())
   return flask.redirect(url_for(".show", ID=ID))
   
 
 @knowledge_page.route("/render/<ID>", methods = ["GET", "POST"])
-def render(ID, footer=None):
+def render(ID, footer=None, kwargs = None):
   """
   this method renders the given Knowl (ID) to insert it
   dynamically in a website. It is intended to be used 
@@ -156,15 +179,15 @@ def render(ID, footer=None):
   k = Knowl(ID)
 
   #logger.debug("kwargs: %s", request.args)
-  kwargs = dict(((k, v) for k,v in request.args.iteritems()))
-  logger.debug("kwargs: %s" , kwargs)
+  kwargs = kwargs or dict(((k, v) for k,v in request.args.iteritems()))
+  #logger.debug("kwargs: %s" , kwargs)
 
   #this is a very simple template based on no other template to render one single Knowl
   #for inserting into a website via AJAX or for server-side operations.
   if request.method == "POST":
     con = request.form['content']
     foot = footer or request.form['footer']
-  else:
+  elif request.method == "GET":
     con = request.args.get("content", k.content)
     foot = footer or request.args.get("footer", "1") 
 
@@ -187,7 +210,7 @@ def render(ID, footer=None):
     render_me += """\
   <div class="knowl-footer">
     <a href="{{ url_for('.show', ID='%(ID)s') }}">permalink</a> 
-    {%% if user.is_authenticated() %%}
+    {%% if user_is_authenticated %%}
       &middot;
       <a href="{{ url_for('.edit', ID='%(ID)s') }}">edit</a> 
     {%% endif %%}
