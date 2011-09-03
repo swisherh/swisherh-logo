@@ -1,0 +1,59 @@
+{% extends 'homepage.html' %}
+
+
+{% block content %}
+
+<style>
+.chi {
+    padding: 5px 5px;
+    width: 2em;
+    float: left;
+    display: inline;
+}
+.chi a { display: inline; }
+.primitive {
+  color:green;
+}
+.nonprimitive {
+    color:blue;
+}
+</style>
+
+<table>
+<thead align="left">
+    <tr>
+        <th>
+            <font color = "blue"> Non-primitive </font> characters.</br>
+            <font color = "green"> Primitive </font> characters. 
+        </th>
+    <tr/>
+</thead>
+</table>
+<br/>
+
+<div>
+<table class="ntdata">
+    <thead align="center">
+    <tr>
+        <th>Modulus</th>
+        <th>Characters</th>
+    </tr>
+</thead>
+<tbody>
+    {% for line in info.contents %}
+    <tr><td align="center" style="4em"> \( {{ line[0] }} \)</td>
+    <td>
+        {% for chi in line[1] %}
+        <div class="chi">
+            <a href="{{ line[0] }}/{{chi[0]}}">{% if chi[1] %}<font color="green">{% else %}<font color="blue">{% endif %}\(\chi_{ {{chi[0]}} }\)</font></a>
+       </div>
+    {% endfor %}
+    </td></tr>
+{% endfor %}
+<tbody>
+</table>
+</div>
+
+{% endblock %}
+
+
