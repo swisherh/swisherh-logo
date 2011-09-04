@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block body -%}
+<div id="header">
+    <div class="logo"><a href="/"><img src="{{ url_for('static', filename='images/lmfdb-logo.png') }}" /></a></div>
+    <div class="right">
+      <div class="bread">
+        {% if bread %}
+          <a href="/">Top</a>
+          {% for b in bread -%}
+            &rarr; <a href="{{ b[1] }}">{{ b[0] }}</a>
+          {%- endfor %}
+         {% endif %}
+      </div>
+      <div class="topright">
+          {% if user_is_admin -%}
+            <a href="{{ url_for('users.register') }}">Registertokens</a>
+            &middot;
+          {% endif %}
+          {% if user_is_authenticated -%}
+            <a href="{{ url_for('users.info') }}">{{ username }}</a> 
+            &middot;
+            <a href="{{ url_for('users.logout') }}">Logout</a>
+          {%- else -%}
+            <a href="{{ url_for('users.register_new') }}">Register</a>
+            &middot;
+            <a href="{{ url_for('users.info') }}">Login</a>
+          {%- endif %}
+          <br/>
+          <span id="communication-wrapper">
+            <img id="communication-img" src="{{ url_for('static', filename='images/progress-green.gif') }}" />
+            Ajax:
+            <span id="communication"></span>
+          </span>
+      </div>
+      {# this span inside a div thing is necessary to align it at the bottom, see css #}
+      <div id="title"><span id="title-content">{{ title|safe }}</span></div>
+    </div>
+</div>
+
+{% block sidebar -%} 
+ {% macro entry(title, entries) -%}
+   {% if entries %}
+    <h2>{{ title }}</h2>
+    <ul class="subnav">
+        {% for text,url in entries %}
+           <li><a href="{{ url }}">{{ text }}</a></li>
+        {% endfor %}
+    </ul>
+   {% endif %}
+ {%- endmacro %}
+
+<div id="sidebar">
+
+  <h2 class="link">
+   <a href="{{ url_for('render_Lfunction') }}">L-functions and Zeta-functions</a>
+  </h2>
+
+  <h2>Elliptic Curves</h2>
+  <ul>
+   <li><a href="{{ url_for('EC_toplevel') }}  ">Elliptic curves/\(\mathbb Q\)</a>
+  </ul>
+
+  <h2 class="link"><a href="{{ url_for('number_field_render_webpage') }}">Number Fields</a></h2>
+
+  <h2>Characters</h2>
+  <ul>
+   <li><a href="{{ url_for('render_Character') }} ">Dirichlet Characters</a></li>
+  </ul>
+
+  <h2 class="link">
+       <a class="mf"    href="{{ url_for('mf.modular_form_main_page') }}">Modular Forms</a></h2>
+  <ul>
+   <li><a class="emf"  href="{{ url_for('emf.render_elliptic_modular_forms') }}">Holomorphic Cusp Forms</a></li>
+   <li><a class="mwf"  href="{{ url_for('mwf.render_maass_waveforms') }}">Maass Forms</a></li>
+   <li><a              href="{{ url_for('ModularForm_GSp4_Q_top_level') }}">Siegel modular forms</a> </li>
+   <li><a class="mwfp" href="{{ url_for('mwfp.render_picard_maass_forms') }}">Maass Forms on \(SL_2(Z[i])\)</a></li>
+   <li><a              href="{{ url_for('hilbert_modular_form_render_webpage') }}">Hilbert Modular Forms</a></li>
+  </ul>
+   {# <li><a href="{{ url_for('quadratic_twists') }}">Quadratic Twists</a></li> #}
+   {# <li><a class="local_fields" href="{{ url_for('local_fields.index') }}">Local Fields</a></li> #}
+
+  <h2>Search</h2>
+   <ul>
+    <li><a href="{{ url_for('LfunctionDB.query', zerolowerbound=1.1, zeroupperbound=2.1) }}">Search L-functions</a></li>
+   </ul>
+  
+   {{ entry("Learn more about", learnmore) }}
+   {{ entry("Friends", friends) }}
+   {{ entry("Downloads", downloads) }}
+   {{ entry("Related Data", getUploadedFor(request.path) ) }}
+
+ {% if sidebar -%}
+  {% for topic, content in sidebar -%}
+    {{ entry(topic, content) }}
+  {%- endfor %}
+ {%- endif %}
+
+</div>
+{%- endblock sidebar %}
+
+    {% if properties2 %}
+      <div id="properties">
+       <h1 id="properties-header">Properties</h1>
+       <div id="properties-collapser">&uarr;</div>
+       <div id="properties-body">
+       {% for label, content in properties2 %}
+         {% if label %}<h2>{{ label }}</h2>{% endif %}
+        <div>
+          {% if content is string  %}
+            {{ content|safe }}
+          {% else %}
+            {{ p[1]|join('<br/>') }}
+          {% endif %}
+        </div>
+       {% endfor %} 
+      </div>
+     </div>
+    {% endif %}
+
+    {% if (citation or properties) -%}
+      <div id="properties">
+       <h1 id="properties-header">Properties</h1>
+       <div id="properties-collapser">&uarr;</div>
+       <div id="properties-body">
+        {% if citation -%}
+         <h1>Citation</h1>
+         {{ citation }}
+        {%- endif %} 
+        {% if properties -%}
+         {% for p in properties -%}{{ p|safe }}{%- endfor %}
+        {%- endif %}
+      </div>
+    </div>
+    {%- endif %}
+
+
+<div id="main">
+  <div id="mathjax-info">
+    <img src="{{ url_for('static', filename='images/progress-green.gif') }}" />
+    <br/>
+    Loading website and processing LaTeX ...
+    <br>
+    <span id="mathjax-log"></span>
+  </div>
+  <div id="content">
+    {% with msgs = get_flashed_messages(with_categories=true) -%}
+      <div id="flashes">
+        {% for cat, msg in msgs -%}
+          <p class="{{ cat }}">{{ msg }}</p>
+        {%- endfor %}
+      </div>
+    {%- endwith %}
+    
+    {% block content -%}
+    There is nothing here. This is just a template.
+    {%- endblock content %}
+  </div>
+</div>
+
+<div id="footer">
+    {% if credit -%}
+      &copy; Data computed by {{ credit|safe }}.<br />
+    {%- endif %}
+    
+    {% if support -%}
+      {{ support|safe }}<br/>
+    {%- else -%}
+       The creation of this website was supported by the NSF, AIM ...<br />
+    {%- endif %}
+    Number Theory, the Queen of Mathematics!
+</div>
+
+{%- endblock body %}
