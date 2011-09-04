@@ -589,6 +589,13 @@ table .knowl-link {
   font-size: x-small;
   text-align: right;
 }
+.knowl-inc-edit a {
+  padding: 3px 5px 1px 5px;
+  color: {{ col_knowl }};
+  background: {{ col_knowl_l }};
+  border-top-left-radius: 5px;
+  -moz-border-radius-topleft: 5px;
+} 
 .knowl {
   padding: 0;
 }
