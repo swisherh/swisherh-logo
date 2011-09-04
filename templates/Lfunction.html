@@ -10,6 +10,10 @@
  <div>
    {{ KNOWL('lfunction.selbergdata', title="Selberg data") }}: ${{ info.functionalequationSelberg }}$</div>
  
+ 
+ 
+
+ 
  <h2>{{ KNOWL('alg.euler_prod') }}</h2>
  <div>\[{{ eulerproduct }}\]</div>
 
@@ -18,11 +22,11 @@
  {% if zeroeslink %}
      <div><span id="zeroes"></span></div>
  {% else %}
-     <div>Not enough Dirichelet series coefficients to compute zeros.</div>
+     <div>Not enough Dirichlet series coefficients to compute zeros.</div>
  {% endif %}
 
  {% if sv1 and sv12 %}
-     <h2> {{ KNOWL('L.special_values') }} </h2>
+     <h2>Special Values</h2>
      <div>
       {{ sv12 }}<br>
       {{ sv1 }}<br>
