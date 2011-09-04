@@ -480,8 +480,13 @@ table th {
 }
 
 table th, table td {
-  padding-left:  10px;
-  padding-right: 10px;
+  padding-left:  20px;
+  padding-right: 20px;
+}
+
+table a.knowl-link, 
+table a.knowl-title {
+    display: inline;
 }
 
 table a {
@@ -505,7 +510,7 @@ table td.spacing {
 }
 
 table.ntdata {
-    width: 100%;
+    width: auto;
     border: 0;
 }
 
@@ -520,12 +525,15 @@ table.ntdata tbody tr {
 table.ntdata tbody th {
 }
 
-table tr.odd {
-    background: white;
+table.ntdata tr.odd,
+table.ntdata tr:nth-child(odd),
+table.ntdata tr:first-child {
+ background: white;
 }
 
-table tr.even {
- background: #eeffee;
+table.ntdata tr.even,
+table.ntdata tr:nth-child(even) {
+ background: #EFE;
 }
 
 table.ntdata tr.line {
@@ -587,6 +595,13 @@ table .knowl-link {
   font-size: x-small;
   text-align: right;
 }
+.knowl-inc-edit a {
+  padding: 3px 5px 1px 5px;
+  color: {{ col_knowl }};
+  background: {{ col_knowl_l }};
+  border-top-left-radius: 5px;
+  -moz-border-radius-topleft: 5px;
+} 
 .knowl {
   padding: 0;
 }

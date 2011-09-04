@@ -157,10 +157,10 @@ def lfuncDStex(L ,fmt):
         ans=ans+" + \\ \\cdots\n\\end{align}"
 
     elif fmt=="abstract":
-       if L.Ltype=="riemann":
+       if L.Ltype()=="riemann":
         ans="\\begin{equation} \n \\zeta(s) = \\sum_{n=1}^{\\infty} n^{-s} \n \\end{equation} \n"
 
-       elif L.Ltype=="dirichlet":
+       elif L.Ltype()=="dirichlet":
         ans="\\begin{equation} \n L(s,\\chi) = \\sum_{n=1}^{\\infty} \\chi(n) n^{-s} \n \\end{equation}"
         ans = ans+"where $\\chi$ is the character modulo "+ str(L.charactermodulus)
         ans = ans+", number "+str(L.characternumber)+"." 
@@ -179,12 +179,12 @@ def lfuncEPtex(L,fmt):
     ans=""
     if fmt=="abstract":
         ans="\\begin{equation} \n "+L.texname+" = "
-        if L.Ltype=="riemann":
+        if L.Ltype()=="riemann":
              ans= ans+"\\prod_p (1 - p^{-s})^{-1}"
-        elif L.Ltype=="dirichlet":
+        elif L.Ltype()=="dirichlet":
              ans= ans+"\\prod_p (1- \\chi(p) p^{-s})^{-1}"
 
-        elif L.Ltype=="maass":
+        elif L.Ltype()=="maass":
             if L.group == 'GL2':
                 ans= ans+"\\prod_p (1- a(p) p^{-s} + p^{-2s})^{-1}"
             elif L.group == 'GL3':
@@ -217,9 +217,9 @@ def lfuncFEtex(L,fmt):
         if L.level>1:
             ans+=latex(L.level)+"^{\\frac{s}{2}}"
         for mu in L.mu_fe:
-           ans += "\Gamma_R(s"+seriescoeff(mu,0,"signed","",-6,5)+")"
+           ans += "\Gamma_{\mathbb{R}}(s"+seriescoeff(mu,0,"signed","",-6,5)+")"
         for nu in L.nu_fe:
-           ans += "\Gamma_C(s"+seriescoeff(nu,0,"signed","",-6,5)+")"
+           ans += "\Gamma_{\mathbb{C}}(s"+seriescoeff(nu,0,"signed","",-6,5)+")"
         ans += " \\cdot "+L.texname+"\\cr\n"
         ans += "=\\mathstrut & "+seriescoeff(L.sign,0,"factor","",-6,5)
         ans += L.texnamecompleted1ms+"\n\\end{align}\n"
