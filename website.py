@@ -137,6 +137,10 @@ def plotLfunction(arg1 = None, arg2 = None, arg3 = None, arg4 = None, arg5 = Non
 def browseGraph():
     return renderLfunction.render_browseGraph(request.args)
 
+@app.route("/browseGraphTMP")
+def browseGraphTMP():
+    return renderLfunction.render_browseGraphTMP(request.args)
+
 @app.route("/browseGraphHolo")
 def browseGraphHolo():
     return renderLfunction.render_browseGraphHolo(request.args)
@@ -179,12 +183,13 @@ def usage():
     print """
 Usage: %s [OPTION]...
 
-  -p, --port=NUM    bind to port NUM (default 37777)
-  -h, --host=HOST   bind to host HOST (default "127.0.0.1")
-  -l, --log=FILE    log to FILE (default "flasklog")
-      --dbport=NUM  bind the MongoDB to the given port (default 37010)
-      --debug       enable debug mode
-      --help        show this help
+  -p, --port=NUM      bind to port NUM (default 37777)
+  -h, --host=HOST     bind to host HOST (default "127.0.0.1")
+  -l, --log=FILE      log to FILE (default "flasklog")
+      --dbport=NUM    bind the MongoDB to the given port (default 37010)
+      --debug         enable debug mode
+      --logfocus=NAME enter name of logger to focus on
+      --help          show this help
 """ % sys.argv[0]
 
 def main():
@@ -193,7 +198,7 @@ def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:],
                 "p:h:l:",
-                [ "port=", "host=", "dbport=", "log=", "debug", "help",
+                [ "port=", "host=", "dbport=", "log=", "logfocus=", "debug", "help",
                 # undocumented, see below
                 "enable-reloader", "disable-reloader",
                 "enable-debugger", "disable-debugger",
@@ -205,6 +210,9 @@ def main():
 
     # default options to pass to the app.run()
     options = { "port": 37777, "host": "127.0.0.1" , "debug" : False}
+    # the logfocus can be set to the string-name of a logger you want
+    # follow on the debug level and all others will be set to warning
+    logfocus = None
     logfile = "flasklog"
     dbport = 37010
 
@@ -222,6 +230,8 @@ def main():
             dbport = int(arg)
         elif opt == "--debug":
             options["debug"] = True
+        elif opt == "--logfocus":
+            logfocus = arg
         # undocumented: the following allow changing the defaults for
         # these options to werkzeug (they both default to False unless
         # --debug is set, in which case they default to True but can
@@ -251,6 +261,7 @@ def main():
     
     import base
     base._init(dbport, readwrite_password)
+    base.set_logfocus(logfocus)
     logging.info("... done.")
 
     # just for debugging
