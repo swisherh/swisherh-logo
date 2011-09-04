@@ -1,0 +1,18 @@
+syntax:glob
+password.py
+
+*.pyc
+*.so
+*.o
+*.c
+*.swp
+*~
+
+static/MathJax
+
+flasklog
+
+# vim swap files
+.*.sw?
+# backup files
+*~
