@@ -1,0 +1,66 @@
+{% extends 'homepage.html' %}
+
+
+{% block content %}
+
+<style>
+.conductor {
+    vertical-align: top;
+    padding-top: 1em;
+    border-right: 2px solid #8a8;
+}
+.chi {
+    padding: 10px 10px;
+    width: 7em;
+    float: left;
+    display: inline;
+    white-space:nowrap;
+}
+.chi a { display: inline; font-family: serif;}
+.primitive {
+  color:"green";
+}
+.nonprimitive {
+    color:"blue";
+}
+</style>
+
+<table>
+<thead align="left">
+    <tr>
+        <th>
+            <font color = "blue"> Non-primitive </font> characters.</br>
+            <font color = "green"> Primitive </font> characters. 
+        </th>
+    <tr/>
+</thead>
+</table>
+<br/>
+
+<div>
+<table class="ntdata">
+    <thead align="center">
+    <tr>
+        <th>Conductor</th>
+        <th>Characters</th>
+    </tr>
+</thead>
+<tbody>
+    {% set row_class = cycler('odd', 'even') %}
+    {% for line in contents %}
+    <tr class="{{ row_class.next() }}"><td class="conductor" align="center" style="4em"> {{ line[0] }} </td>
+    <td>
+        {% for chi in line[1] %}
+        <div class="chi">
+            <a href="{{ chi[0] }}/{{chi[1]}}">{% if chi[2] %}<font color="green">{% else %}<font color="blue">{% endif %}&chi;<sub>{{chi[0]}}</sub> (mod {{chi[0]}})</font></a>
+       </div>
+    {% endfor %}
+    </td></tr>
+{% endfor %}
+<tbody>
+</table>
+</div>
+
+{% endblock %}
+
+
