@@ -1,0 +1,30 @@
+{% extends 'homepage.html' %}
+{% block content %}
+
+
+
+  <h2>  Hecke field  </h2>
+
+  <p> Degree: {{ info.dimension }} </p>
+  <p> Defining polynomial: {{ info.hecke_polynomial }} </p>
+
+  <h2>  Hecke eigenvalues  </h2>
+
+<table border=1 cellpadding=5 class='right_align_table'>
+<tr>
+<th>Norm</th>
+<th>Prime</th>
+<th>Eigenvalue</th>
+</tr>
+{% for entry in info.eigs: %}
+<tr>
+<td>{{entry.prime_norm}}</td>
+<td>{{entry.prime_ideal}}</td>
+<td>{{entry.eigenvalue}}</td>
+</tr>
+{% endfor %}
+</table>
+
+
+
+{% endblock %}
