@@ -1,0 +1,32 @@
+{% extends "homepage.html" %}
+
+{% block content %}
+
+{% if info.error is defined %}
+
+<h1>There was an error in meeting your previous request. Please change parameters.</h1>
+
+<div> 
+<h2> Error message: </h2>
+{{ info.error | safe }}
+</div>
+{% endif %}
+
+<p>
+<a href="{{ url_for('emf.render_elliptic_modular_forms') }}">Classical Holomorphic (Elliptic) Modular Forms</a>
+</p>
+<p>
+<a href="{{ url_for('hilbert_modular_form_render_webpage') }}">Hilbert Modular Forms</a>
+</p>
+<p>
+<a href="{{ url_for('mwf.render_maass_waveforms') }}">Maass Forms on \(\mathrm{GL}_{2}(\mathbb{Q}) \)</a>
+</p>
+<p>
+<a href="{{ url_for('mwfp.render_picard_maass_forms') }}">Maass Forms on the Picard group \(\mathrm{SL}_{2}(\mathbb{Z}[i])\)</a>
+</p>
+<p><a href="{{ url_for('ModularForm_GSp4_Q_top_level') }}">Siegel Modular Forms</a> 
+</p>
+
+</ul>
+
+{% endblock content %}
