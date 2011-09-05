@@ -1,0 +1,66 @@
+{% extends 'homepage.html' %}
+
+{% block content %}
+
+<!--{{ info.query }}-->
+
+<h2> Further refine search </h2>
+
+
+<form>
+<table border="0">
+
+<tr>
+<td align=left> {{ KNOWL_LINK('EC.conductor') }} <input type='text' name='conductor' size=10 value={{info.conductor}}></td>
+<td align=left>{{ KNOWL_LINK('EC.rank') }}<input type='text' name='rank'size=1 value={{info.rank}}></td>
+<td align=left>{{ KNOWL_LINK('EC.torsion_order') }} <input type='text' name='torsion' size=1 value={{info.torsion}}> </td>
+<td align=left>
+Optimal 
+<select name='optimal'>
+  <option value="">No</option>
+  <option value="on">Yes</option>
+</select>
+</td>
+</tr>
+<tr>
+<td align=left colspan=4>Maximum number of curves to display <input type='text' name='count' value={{info.count}} size=10>
+</td>
+</tr>
+
+<tr> <td>
+<button type='submit' value='refine'>Refine</button>
+</td> </tr>
+</table>
+</form>
+
+<style type="text/css">
+table td.center {
+  text-align: center;
+}
+table td.params {
+  text-align: left;
+  font-family: monospace;
+}
+</style>
+
+<h2> Results ({{info.report}})</h2>
+<table>
+<tr>
+  <th class="center">{{ KNOWL_LINK('EC.isogeny_class') }}</th>
+  <th class="center">{{ KNOWL_LINK('EC.Cremona_label') }}</th>
+  <th align="left">[a<sub>1</sub>,  a<sub>2</sub>, a<sub>3</sub>, a<sub>4</sub>, a<sub>6</sub>]</th>
+  <th class="center">{{ KNOWL_LINK('EC.rank') }}</th>
+  <th class="center">{{ KNOWL_LINK('EC.torsion_order') }}</th>
+</tr>
+{% for curve in info.curves: %}
+<tr>
+<td class="center"><a href="/EllipticCurve/Q/{{curve.iso}}">{{curve.iso}}</a></td>
+<td class="center"><a href="/EllipticCurve/Q/{{curve.label}}">{{curve.label}}</a></td>
+<td class="params">{{info.format_ainvs(curve.ainvs)}}</td>
+<td class="center"><a href="/EllipticCurve/Q?conductor={{info.conductor}}&rank={{curve.rank}}&torsion={{info.torsion}}">{{curve.rank}}</a></td>
+<td class="center"><a href="/EllipticCurve/Q?conductor={{info.conductor}}&rank={{info.rank}}&torsion={{curve.torsion}}">{{curve.torsion}}</a></td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}
