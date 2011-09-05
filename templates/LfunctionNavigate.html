@@ -1,0 +1,69 @@
+{% extends 'homepage.html' %}
+
+{% block content %}
+<h2> Browse {{KNOWL('lfunction', title='L-functions')}} by {{KNOWL("lfunction.type",title="type")}}</h2>
+<table>
+{% for i in info.l: %}
+<tr>
+  {% for t in info.type_table[i]: %}
+  <td><a  style="padding: 5px;" href="{{t.link}}">{{t.title|safe}}</a></td>
+  {% endfor %}
+<tr>
+{% endfor %}
+</table>
+
+<h2> Browse {{KNOWL('lfunction', title='L-functions')}} by {{KNOWL('lfunction.degree', title='degree') }}</h2>
+<table>
+ <tr>
+    <td style="text-align: center;">
+       <a style="width: 2em;" {{url_for('render_Lfunction', arg1 = 'degree1')}}>1</a>
+       <a style="width: 2em;" {{url_for('render_Lfunction', arg1 = 'degree2')}}>2</a>
+       <a style="width: 2em;" {{url_for('render_Lfunction', arg1 = 'degree3')}}>3</a>
+       <a style="width: 2em;" {{url_for('render_Lfunction', arg1 = 'degree4')}}>4</a>
+    </td>
+ </tr>
+
+</table>
+<br />
+
+<h2> Search </h2>
+
+
+<form action="{{url_for(".LfunctionDB.query")}}" method=get>
+<div>
+Enter values into one or more boxes to restrict the search.
+</div>
+<table>
+<tr>
+<td>{{ KNOWL('lfunction.degree', title='Degree') }}</td><td> <input type='text' name='degree' size = "4" placeHolder='2'></td><td><span class="formexample"> e.g. 2 </span></td>
+
+</tr>
+
+<tr>
+<td>{{ KNOWL('lfunction.signature', title='Signature') }}</td><td> <input type='text' name='signature' size = '4' placeHolder='[0,1]'></td><td><span class="formexample"> e.g. [0,1] </span></td>
+</tr>
+
+<tr>
+<td>{{ KNOWL('lfunction.level', title='Level') }} </td><td><input type='text' name='level' size='4' placeHolder='656'></td><td><span class="formexample"> e.g. 656 </span></td>
+</tr>
+<tr>
+
+<tr>
+<td>{{ KNOWL('lfunction.zeros', title='Lowest Zero') }} is greater than</td><td> <input type='text' size='4' name='zerolowerbound' placeHolder='1.1'></td><td> and less than </td><td><input type='text' size='4' name='zeroupperbound' placeHolder='2.1'></td><td><span class="formexample"> e.g. 1.1 and 2.1 </span></td>
+</tr>
+<tr>
+<td>{{ KNOWL('lfunction.critical_value', title='Critical Value') }} is around</td><td> <input type='text' name='critical_value' size='4' placeHolder='0.5'></td><td><span class="formexample"> e.g. 0.5 </span></td>
+</tr>
+
+<tr>
+<td>{{ KNOWL('lfunction.special_values', title='Value') }} at 1 is around</td><td> <input type='text' name='special_value' size='4' placeHolder='3.1'></td><td><span class="formexample"> e.g. 3.1 </span></td>
+</tr>
+</table>
+<p>
+<input type='submit' value='Search' >
+</p>
+</form>
+
+{% endblock %}
+
+
