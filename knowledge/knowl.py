@@ -19,9 +19,22 @@ def get_deleted_knowls():
 def get_knowl(ID, fields = { "history": 0, "_keywords" : 0 }):
   return get_knowls().find_one({'_id' : ID}, fields=fields)
 
+def refresh_knowl_categories():
+  """
+  when saving, we refresh the knowl categories
+  (actually, this should only happen if it is a new knowl!)
+  """
+  #cats = set([ _['_id'].split(".")[0] for _ in get_knowls().find(fields=[]) ])
+  #get_knowls().update({'categories' : { "$has" : True }}, {'categories' : sorted(cats)}, upsert=True)
+  pass
+
 import re
-valid_keywords = re.compile(r"[#]?\b[a-zA-Z0-9-]{3,}\b")
+valid_keywords = re.compile(r"\b[a-zA-Z0-9-]{3,}\b")
 html_keywords  = re.compile(r"&[a-zA-Z0-9]+;")
+# this one is different from the hashtag regex in main.py,
+# because of the match-group ( ... ) 
+hashtag_keywords = re.compile(r'#[a-zA-Z][a-zA-Z0-9-_]{1,}\b')
+common_words = set(['and', 'an', 'or', 'some', 'many', 'has', 'have', 'not', 'too' ])
 
 def make_keywords(content, kid, title):
   """
@@ -35,8 +48,11 @@ def make_keywords(content, kid, title):
   kws += valid_keywords.findall(content)
   kws += html_keywords.findall(title)
   kws += html_keywords.findall(content)
+  kws += hashtag_keywords.findall(title)
+  kws += hashtag_keywords.findall(content)
   kws = [ k.lower() for k in kws ]
-  kws = list(set(kws))
+  kws = set(kws)
+  kws = filter(lambda _:_ not in common_words, kws)
   return kws
 
 class Knowl(object):
@@ -83,6 +99,8 @@ class Knowl(object):
       get_knowls().update(
          { '_id':self.id }, 
          { "$addToSet" : { "authors" : who }})
+    # TODO only do this if its a new one
+    refresh_knowl_categories()
         
   def delete(self):
     """deletes this knowl from the db. (DANGEROUS, ADMIN ONLY!)"""
@@ -94,6 +112,10 @@ class Knowl(object):
     return self._authors
 
   def author_links(self):
+     """
+     Basically finds all full names for all the referenced authors.
+     (lookup for all full names in just *one* query, hence the or)
+     """
      a_query = [{'_id': _} for _ in self.authors]
      a = []
      if len(a_query) > 0:
