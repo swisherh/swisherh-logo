@@ -1,0 +1,834 @@
+{# template defs #}
+{% set col_error = '#922' %}
+{% set col_main = '#292' %}
+{% set col_main_2 = '#afa' %}
+{% set col_main_l = '#bfb' %}
+{% set col_main_ll = '#efe' %}
+
+{% set col_knowl = '#229' %}
+{% set col_knowl_l = '#DDF' %}
+{% set col_knowl_ll = '#EEF' %}
+{% set col_knowl_d = '#88F' %}
+{% set col_knowl_dd = '#005' %}
+
+{# end defs #}
+
+* {
+zoom: 0;
+}
+
+img { border: 0; }
+
+body {
+    margin: 0px;
+    padding: 0px;
+    font-family: sans-serif;
+    color: #111;
+    background-color: white;
+    /* max-width: 1200px; */
+}
+#mathjax-info {
+  display: none;
+  position: absolute;
+  z-index: 99;
+  width: 600px;
+  height: 600%;
+  padding-top: 150px;
+  line-height: 20px;
+  text-align: center;
+  font-size: small;
+  color: grey;
+}
+#content > h1
+{
+    font-size: 130%;
+    font-weight: bold;
+    color: {{ col_main }};
+    font-family: sans-serif;
+    text-decoration: none;
+    margin: 15px 0;
+}
+#content > h1:first-child,
+#content > h2:first-child {
+  margin-top: 0px;
+}
+
+#content > h2
+{
+    font-family: sans-serif;
+    text-decoration: none;
+    font-size: 120%;
+    text-align: left;
+    font-weight: bold;
+    color: #292;
+    padding: 5px 0 5px 0;
+    margin: 15px 0 10px 0;
+}
+#content > h3 {
+    font-family: sans-serif;
+    text-decoration: none;
+    font-size: 110%;
+    text-align: left;
+    font-weight: bold;
+    padding: 5px 0 5px 0;
+    color: #181;
+    margin: 10px 0 5px 0;
+}
+#footer {
+    clear: both;
+    margin-top: 40px;
+    background-color: #dfd;
+    border-top: 2px solid {{ col_main_l }};
+    padding: 25px 10px;
+    text-align: center;
+    font-size: 75%;
+    color: #060;
+}
+
+#content > ul {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+a {
+  color: #292;
+  text-decoration: none;
+  font-family: sans-serif;
+}
+#content a {
+}
+#content .announce {
+  font-size: 1.2em;
+  margin: 40px;
+  padding: 20px;
+  border: 1px solid {{ col_main }};
+
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+
+  -webkit-box-shadow: inset 0px 0px 15px 5px {{ col_main_l }};
+  -moz-box-shadow:    inset 0px 0px 15px 5px {{ col_main_l }};
+  box-shadow:         inset 0px 0px 15px 5px {{ col_main_l }};
+}
+#content .announce.error {
+  border: 1px solid {{ col_error }};
+  -webkit-box-shadow: inset 0px 0px 15px 5px {{ col_error }};
+  -moz-box-shadow:    inset 0px 0px 15px 5px {{ col_error }};
+  box-shadow:         inset 0px 0px 15px 5px {{ col_error }};
+}
+
+a:visited { color: #080; }
+a:hover { 
+  color: #000; 
+  background: #cfc;  
+}
+
+.logo a, .logo a:hover, body.knowl .logo a:hover {
+  background: none;
+}
+
+#header {
+  /*border-bottom: 2px solid #4a4;*/
+  min-height: 120px;
+  background: #dfd;
+  -moz-box-shadow:     0px 5px 5px #8b8;
+  -webkit-box-shadow:  0px 5px 5px #8b8;
+  box-shadow:          0px 5px 5px #8b8;
+}
+
+body.knowl #header {
+  background: {{ col_knowl_l }};
+  -moz-box-shadow:     0px 5px 5px #88b;
+  -webkit-box-shadow:  0px 5px 5px #88b;
+  box-shadow:          0px 5px 5px #88b;
+}
+
+#header .logo {
+    float: left;
+    height: 120px;
+    width: 200px;
+    margin: 0px;
+}
+#header .right {
+  margin-left: 210px;
+  margin-top: 0px;
+  position: relative;
+}
+#header #title {
+    /* border: 1px solid green; */
+    font-size: 180%;
+    font-weight: bold;
+    font-family: sans-serif;
+    min-height: 100px;
+    position: relative;
+    color: #040;
+}
+
+#header #title-content {
+  position: absolute;
+  bottom: 4px;
+}
+
+#header .bread {
+    /* border: 1px solid red; */
+    font-family: sans-serif;
+    min-height: 18px;
+    font-size: 90%;
+    padding-top: 2px;
+}
+#header .topright {
+  /* border: 1px solid red;  */
+  text-align: right;
+  white-space:nowrap; 
+  color: #060;
+  font-family: sans-serif;
+  min-height: 18px;
+  font-size: 90%;
+  padding: 2px 5px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+#header .topright a {
+  color: #060;
+}
+#header .topright #communication-wrapper {  
+  display: none;
+  padding: 4px;
+}
+#header #navi {
+  white-space: nowrap;
+  font-size: 90%;
+  padding: 2px 5px;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;  
+  z-index: 5;
+}
+
+#flashes p {
+  border-left: 15px solid #DDF;
+  padding: 5px;
+  background: #EEF;
+  
+}
+
+#flashes p.error {
+  margin: 15px 0;
+  font-size: 95%;
+  border: 0;
+  border-left: 15px solid #FDD;
+  background: #FEE;
+}
+
+
+
+#main {
+	margin:  0px 0px 0px 200px;
+	padding: 0px 0px 0px 10px;
+  min-height: 600px;
+    /* border: 1px solid purple; */
+}
+
+#properties {
+    z-index: 99;
+    font-size: 85%;
+    font-family: sans-serif;
+    float: right;
+    clear: right;
+    margin: 20px 0px 15px 15px;
+    /* width: 20%; */
+    /* background: #9d9; */
+    position: relative;
+    border: 1px solid #474;
+    border: 0;
+    padding: 0px;
+}
+#properties-body div, #properties-body p {
+  padding: 5px;
+}
+#properties-body h1, #properties-body h2 {
+    color: #050;
+    padding: 5px;
+    margin: 0;
+    margin-bottom: 0;
+    background: {{ col_main_l }};
+}
+#properties-body h1 {
+    font-size: 120%;
+}
+#properties-body h2 {
+    font-size: 110%;
+    margin-top: 10px;
+}
+#properties-body h2:first-child { margin-top: 0px; }
+
+#properties-body {
+  margin: 0;
+  padding: 0;
+  background: #efe;
+  min-width: 200px;
+  border-bottom-left-radius: 10px;
+  -moz-border-radius-bottomleft: 10px;
+}
+#properties-header {
+  border-top-left-radius: 10px;
+  -moz-border-radius-topleft: 10px;
+  margin: 0;
+  padding: 5px;
+  color: #050;
+  background: #9d9;
+  font-size: 14px;
+  cursor: pointer;
+  padding-right: 30px;
+}
+#properties-collapser {
+  cursor: pointer;
+  color: #050;
+  font-size: 19px;
+  font-weight: bold;
+  text-align: center;
+  border: 1px solid ;
+  width: 20px;
+  height: 17px;
+  position: absolute;
+  top:   3px;
+  right: 3px;
+
+  border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+}
+
+
+#content {
+  margin-top: 20px;
+  font-size: 95%;
+}
+
+#content blockquote
+{
+/*
+    margin: 10px;
+    color: #996633;
+    text-decoration: none;
+    font-size: 12px;
+    padding-left: 15px;
+    font-family: sans-serif;
+    line-height: 18px;
+    background-color: #F1EFE2;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: justify;
+    padding-right: 10px;
+    border: 2px solid #ECE9D8;
+*/
+}
+/*
+blockquote p {
+    color: #CC6600;
+    line-height: 18px;
+    font-family: serif;
+}
+*/
+
+#sidebar {
+  float: left;
+  width: 200px;
+  margin: 20px 0px 0px 0px;
+  font-family: sans-serif;
+  font-size: 85%;
+  color: #390;
+  background: #EFE;
+  border-top-right-radius: 10px;
+  -moz-border-radius-topright: 10px;
+  border-bottom-right-radius: 10px;
+  -moz-border-radius-bottomright: 10px;
+}
+
+#sidebar h2 {
+    font-family: sans-serif;
+    font-size: 100%;
+    background-color: {{ col_main_l }};
+    color: #050;
+    padding: 5px;
+    margin: 15px 0 0 0;
+}
+#sidebar h2:first-child {
+  margin-top: 0;
+}
+
+#sidebar ul:first-child a:first-child,
+#sidebar h2:first-child a:first-child,
+#sidebar h2:first-child {
+  margin: 0;
+  border-top-right-radius: 10px;
+  -moz-border-radius-topright: 10px;
+}
+#sidebar ul:last-child li:last-child,
+#sidebar ul:last-child li:last-child a {
+  border-bottom-right-radius: 10px;
+  -moz-border-radius-bottomright: 10px;
+}
+#sidebar ul {
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+}
+#sidebar ul li {
+    display: block;
+    margin: 0px;
+    padding: 0px;
+}
+#sidebar a:hover {
+    background: {{ col_main_l }};
+}
+#sidebar a {
+    display: block;
+}
+#sidebar li a {
+  background: {{ col_main_ll }};
+  padding: 5px;
+}
+#sidebar h2 a { padding: 5px; }
+#sidebar h2 a:hover {
+  background: {{ col_main_2 }};
+}
+#sidebar h2.link {
+  padding: 0px;
+}
+
+/* highlighting menu entries (if their respective blueprint overwirtes the body_class variable!) */
+body.mwf #sidebar a.mwf { background: #BFB; }
+body.cmf #sidebar a.cmf { background: #BFB; }
+body.knowl #sidebar a.knowl { background: #BBF; }
+body.local_fields #sidebar a.local_fields { background: #BFB; }
+
+.visible {
+	visibility: visible;
+}
+	
+.hidden {
+	visibility: hidden;
+	height: 0px;
+}
+
+.code {
+    font-family: monospace;
+    margin: 2px;
+    margin-right: 20px;
+}
+
+.nodisplay {
+    display: None;
+}
+
+.formexample {
+   font-size: 80%;
+   font-style: italic;
+   color: grey;
+}
+
+td.forminfo {
+   font-size: 80%;
+   font-style: italic;
+   color: grey;
+   vertical-align: top;
+}
+
+form input, form textarea {
+  border: 2px solid #ACA;
+  font-size: 110%;
+  padding: 3px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+
+form button, form select {
+  padding: 3px 6px;
+  background: #DFD;
+  font-size: 110%;
+  border-radius: 4px;
+  -moz-border-radius:4px;
+  -webkit-border-radius:4px;
+  cursor: pointer;
+  border: 2px solid #ADA;
+  min-width: 75px;
+}
+
+body.knowl form button, 
+body.knowl form select {
+  border: 2px solid #AAD;
+  background: #DDF;
+}
+body.knowl form textarea,
+body.knowl form input {
+  border: 2px solid #AAD;
+}
+
+form button:hover, 
+form select:hover {
+  background:    #CFC;
+  border: 2px solid #9C9;
+}
+
+body.knowl form button:hover,
+body.knowl form select:hover {
+  background:    #CCF;
+  border: 2px solid #99C;
+}
+
+table {
+    border: 0;
+    border-collapse:collapse;
+}
+
+table th {
+  border-bottom: 2px solid #9B9;
+  padding-bottom: 5px;
+}
+
+table th, table td {
+  padding-left:  20px;
+  padding-right: 20px;
+}
+
+table a.knowl-link, 
+table a.knowl-title {
+  display: inline;
+  padding: 0;
+}
+
+table a {
+  display: block;
+  padding: 2px 5px;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+}
+table td.top {
+  vertical-align:top;
+}
+
+table a:hover {
+    background: #cfc;
+}
+
+
+table td.spacing {
+  height: 20px;
+}
+
+table.ntdata {
+    width: auto;
+    border: 0;
+}
+
+table.ntdata thead tr {
+    background: #afa;
+    border-bottom: 1px solid black;
+}
+
+table.ntdata tbody tr {
+}
+
+table.ntdata tbody th {
+}
+
+table.ntdata tr.odd,
+table.ntdata tr:nth-child(odd),
+table.ntdata tr:first-child {
+ background: white;
+}
+
+table.ntdata tr.even,
+table.ntdata tr:nth-child(even) {
+ background: #EFE;
+}
+
+table.ntdata tr.line {
+    border-bottom: 1px dotted gray;
+}
+
+div.literature {
+    margin-top: 10px;
+    font-size: 90%;
+    color: #111111;
+
+}
+
+.name {
+    font-weight: bold;
+}
+
+.emph {
+    font-style: italic;
+}
+
+.highlight {
+  /* text-decoration: underline; */
+  font-weight: bold;
+}
+
+
+/** page wide defs for knowls, the *[knowl] is a selector for
+ *  all elements, that have a knowl attribute set to any value */
+table .knowl-link {
+  display: inline;
+  border-bottom: 1px dotted {{ col_knowl_dd }};
+  border-radius: 0px;
+  -moz-border-radius: 0px;
+  padding: 1px;
+}
+.knowl-bar {
+  background: {{ col_knowl_ll}};
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid {{ col_knowl_d }};
+  border-top-left-radius: 10px;
+  -moz-border-radius-topleft: 10px;
+}
+.knowl-bar a {
+  padding: 2px 5px;
+}
+.knowl-preview-sep {
+  padding: 5px;
+  margin: 30px 0;
+  border-bottom: 1px solid {{ col_knowl_d }};
+  background: {{ col_knowl_ll}};
+  color: {{ col_knowl_dd}};
+  font-weight: bold;
+}
+.knowl-inc-edit {
+  margin-top: 20px;
+  background: {{ col_knowl_ll}};
+  font-size: x-small;
+  text-align: right;
+}
+.knowl-inc-edit a {
+  padding: 3px 5px 1px 5px;
+  color: {{ col_knowl }};
+  background: {{ col_knowl_l }};
+  border-top-left-radius: 5px;
+  -moz-border-radius-topleft: 5px;
+} 
+.knowl {
+  padding: 0;
+}
+.knowl-content {
+  padding: 10px 0px 15px 10px;
+  border-bottom-left-radius: 10px;
+  -moz-border-radius-bottomleft: 10px;
+}
+.knowl-content h1 {
+  margin: 0px 0px 10px 0px;
+}
+.knowl-content h2 {
+  margin: 0px 0px 5px 0px;
+}
+*[knowl] {
+  /* border-bottom: 2px dotted #66C; */
+  /* cursor: pointer; */
+}
+
+*[knowl]:hover {
+  /* border-bottom: 2px solid #66C; */
+  /* color: #66C; */
+  /* background: #ccf; */
+}
+
+.knowl-title, .knowl-title a {
+  border-bottom: 1px dotted {{ col_knowl }};
+  cursor: pointer;
+  border-radius: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+}
+.knowl-title:hover,
+.knowl-title.active {
+  border-bottom: 2px solid {{ col_knowl }};
+  background: {{ col_knowl_l }};
+  color: {{ col_knowl_dd }};
+}
+
+body.knowl #header {
+  background: {{ col_knowl_l }}; 
+}
+body.knowl #header #title {
+  color: #004;
+}
+body.knowl #content h1,
+body.knowl #content h2,
+body.knowl #content a {
+  color: {{ col_knowl }};
+}
+body.knowl a:hover {
+  background: #ccf;
+}
+
+div > *[knowl], p > *[knowl] {
+  position: relative;
+}
+
+.knowl-error {
+   color: red;
+   border-bottom: 0;
+}
+
+.knowl-qm {
+  font-family: sans-serif;
+  font-weight: bold;
+  border: 1px solid {{ col_knowl }};
+  background: transparent;
+  color: {{ col_knowl }}; 
+  cursor: pointer;
+  padding: 0 0.4em;
+  border-radius: 0.8em;
+  font-size: 0.9em;
+  top: -0.4em;
+  left: -0.1em;
+}
+.knowl-qm:hover,
+.knowl-qm.active {
+  background: #66d;
+  color: white
+}
+.knowl-qm.active:hover {
+  background: transparent;
+  color: {{ col_knowl }}; 
+}
+h1 > .knowl-qm {
+  /** custom superscript */
+  font-size: 0.6em;
+  border-radius: 0.6em;
+  position: relative;
+  top: -0.8em;
+  left: -0.3em;
+}
+h2 > .knowl-qm {
+  /** custom superscript */
+  font-size: 0.7em;
+  border-radius: 0.7em;
+  position: relative;
+  top: -0.6em;
+  left: -0.4em;
+}
+.knowl-output {
+  background: {{ col_knowl_ll }}; 
+  border-left: 10px solid {{ col_knowl_l }};
+  border-bottom: 10px solid {{ col_knowl_l }};
+  border-bottom-left-radius: 10px;
+  -moz-border-radius-bottomleft: 10px;
+  padding: 0px;
+  display: none;
+  margin-top: 20px;
+  margin-bottom: 25px;
+}
+.knowl-output.loading {
+ color: grey;
+ font-style: italic;
+ font-size: small;
+}
+.knowl-output h1, .knowl-output h2 {
+  margin: 5px 0;
+}
+.knowl-output h1 {
+  color: {{ col_knowl_dd }};
+}
+.knowl-output h2 {
+  color: {{ col_knowl_dd }};
+}
+.knowl-output a { display: inline; }
+
+.knowl-footer {
+  position: relative;
+  bottom: -10px;
+  font-size: x-small;
+  /* border-top: 1px solid {{ col_knowl_d }}; */
+  background: {{ col_knowl_l }};
+  color: grey;
+  padding: 1px 0 1px 10px;
+  margin:  0 0 0 0;
+}
+.knowl-footer a {
+  color: {{ col_knowl_d }};
+}
+.knowl-footer a:hover {
+  background: none;
+  color: {{ col_knowl }};
+}
+
+/* end knowl */
+
+
+/*** Tables for the Siegel corner ***/
+
+/** TODO these definitions are too broad. please make siegel a 
+ * blueprint (name is e.g. "siegel") and prefix all siegel 
+ * related definitions with body.siegel 
+ */
+.box1 {
+    margin: 20px 5px 20px 5px;
+    padding: 1px;
+    max-width: 800px;
+    overflow: auto;
+}
+
+.small{
+    font-size: 12px;
+}
+
+.error {
+    margin: 20px 0 20px 0;
+    padding: 10px;
+    border: 1px solid red;
+    color: red;
+    font-size: 120%;
+}
+
+.enternumber
+{
+  border: 1px solid black;
+}
+
+.submitbutton
+{
+  border: 1px solid black;
+  background-color: #45BDD7;
+}
+
+.watermark {
+  color: #999 !important;
+}
+
+
+.propertylist {
+  margin: 2em 0;
+  padding: 0;
+  border: 1px solid #999999;
+}
+
+.propertylist dt {
+  font-weight: bold;
+}
+
+.propertylist dd {
+  margin-bottom: 1em
+}
+
+a.navlink {
+  color: white;
+  background-color: #4a4;
+  font-weight: bold;
+  font-size: 11px;
+  text-align: center;
+  padding: 5px;
+  padding-top: 3px;
+  padding-bottom: 4px;
+  border: 1px solid white;
+  outline: 1px solid #4a4;
+  text-decoration: none;
+  margin-left: 1px;
+  margin-top: 10px
+}
