@@ -1,0 +1,79 @@
+{% extends "homepage.html" %}
+
+{% block content %}
+
+<script type="text/javascript" src="{{ url_for('emf.static', filename='elliptic_modular_form_util-functions.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('emf.static', filename='elliptic_modular_form_scripts.js') }}"></script>
+
+
+{% if info.error is defined %}
+
+<h1>There was an error in meeting your previous request. Please change parameters.</h1>
+
+<h2> Error message: </h2>% extends "homepage.html" %}
+
+<div>
+{{ info.error | safe }}
+</div>
+{% endif %}
+<table>
+  <tr>
+    <td>
+      {% if info.weight is defined %}
+      <h1>Maass waveforms of weight {{info.weight}}</h1>
+      {% else %}
+      <h1>Maass waveforms</h1>
+      {% endif %}
+      {% if info.table is defined and info.table.table is defined %}
+      {% set table = info.table.table %}
+      {% set row_class = cycler('odd', 'even') %}
+      <table class="ntdata">
+        <tbody>
+          <tr>
+            {% for tbl  in table %}
+            <td valign="top">
+              <table class="ntdata">
+                <thead><tr><td>Level {{tbl.N}}</td></tr></thead>
+                <tbody>
+                  {% for r,url,name in tbl.evs %}
+                  <tr class="{{ row_class.next() }}">
+                    <td><a style="display:inline" href="{{url}}">{{r}}</a><sup><small>{{ name}} </small></sup></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+      <p>
+      <div>        
+      {% if info.table.metadata is defined %}
+      Contributors to data on this page is:
+      <ul>
+
+        {% for rec in info.table.metadata %}
+        {% set name = rec.contributor %}
+        {% set knowl = rec["knowl-tag"] %}
+        <li>
+          {# Note that this KNOWL is stored in the database #}
+          {{ KNOWL(knowl,title=name) }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+            No metadata available for this data set!
+      </div>
+      {% endif %}
+      {% else %}
+      There are no Maass Forms in the database satisfying the provided criteria.
+      {% endif %}
+    </td>
+  </tr>
+  <tr>
+</table>
+
+</div>
+
+{% endblock content %}
